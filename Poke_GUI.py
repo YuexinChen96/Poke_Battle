@@ -1,4 +1,4 @@
-import sys
+import sys, random
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -7,16 +7,29 @@ from PyQt5.QtCore import *
 root3 = pow(3, 0.5) # root 3
 root6 = pow(6, 0.5) # root 6
 
-class Poke_GUI(QWidget):
+spring = [[0, 5], [19, 4]]
+fire = [[10, 5]]
+water = [[0,4],[1,4],[2,5],[3,5],[4,6],[5,6],[6,7],[7,7],[8,8],[9,8],[10,9],[11,9],[12,9],[13,8],[14,8],[15,7],[16,7],[17,6],[18,6],[19,5],
+[18,5],[17,4],[16,4],[15,3],[14,3],[13,2],[12,2],[11,1],[10,1],[9,0],[8,0],[7,0],[6,1],[5,1],[4,2],[3,2],[2,3],[1,3]]
+telepot = [[0,9],[19,0]]
+s_void = [[0,0],[1,0],[2,0],[19,9],[18,9],[17,9],[9,4],[9,5],[11,4],[11,5],[8,5],[12,5],[3,0],[4,1],[16,9],[15,8]]
 
+class Poke_GUI(QWidget):
+	# for drawing
 	Play1_Pokemons = []
 	Play2_Pokemons = []
+	# for logic store
+	P1P = []
+	P2P = []
 
 	def __init__(self):
 		super().__init__()
 		QtWidgets.QWidget.__init__(self)
 		self.initUI()
 		self.page = 0
+		self.map = [['0' for x in range(10)] for y in range(20)]
+		self.tree = []
+
 
 	def initUI(self):
 		self.setGeometry(0, 0, 1500, 900)
@@ -86,18 +99,58 @@ class Poke_GUI(QWidget):
 	def Page3_UI(self, e, p):
 		#draw the map
 		self.Mapping(e, p)
+		self.turn = 0
 		
 
+	# draw basic blocks and control buttons
 	def Mapping(self, e, p):
+		self.init_logical_Graph()
+
+		p.setBrush(QColor(255,255,255))
 		# Basic Polygons
 		for a in range(10):
 			for b in range(2):
 				for c in range(10):
+					# setup color
+					pic_ = self.map[2 * a + b][c]
+					# drawBlocks
 					if b == 0:
 						self.drawPolygonByPos(20 + c * 120, a * 40 * root3, 40, p)
+						self.drawPokemon(20 + c * 120, a * 40 * root3, 40, p, 'Pics/' + pic_ + '.jpg')
 					elif b == 1:
 						self.drawPolygonByPos(80 + c * 120, 20 * root3 + a * 40 * root3, 40, p)
+						self.drawPokemon(80 + c * 120, 20 * root3 + a * 40 * root3, 40, p, 'Pics/' + pic_ + '.jpg')
+		p.setFont(QFont("Arial", 20))
+		p.drawRect(100, 800, 60, 60)
+		p.drawRect(300, 800, 120, 60)
+		p.drawText(320, 840, 'Move')
+		p.drawRect(500, 800, 120, 60)
+		p.drawText(520, 840, 'Spell')
+		p.drawRect(700, 800, 120, 60)
+		p.drawText(720, 840, 'Spell_')
+		p.drawRect(900, 800, 120, 60)
+		p.drawText(920, 840, '*Ulti*')
 
+
+
+	# generate water, tree, springs
+	def init_logical_Graph(self):
+		while(len(self.tree) < 60):
+			x = int(random.random() * 20)
+			y = int(random.random() * 10)
+			if [x, y] not in spring and [x, y] not in fire and [x, y] not in telepot and [x, y] not in s_void and [x, y] not in self.tree and [x, y] not in water:
+				self.tree.append([x, y])
+		for i in spring:
+			self.map[i[0]][i[1]] = 'spring'
+		for i in fire:
+			self.map[i[0]][i[1]] = 'fire'
+		for i in water:
+			self.map[i[0]][i[1]] = 'water'
+		for i in telepot:
+			self.map[i[0]][i[1]] = 'telepot'
+		for i in self.tree:
+			self.map[i[0]][i[1]] = 'tree'
+		#print(self.map)
 
 
 	# buttons click events - UI part
@@ -131,7 +184,7 @@ class Poke_GUI(QWidget):
 			#start the game
 			elif self.page == 1 and len(self.Play1_Pokemons) == 3 and len(self.Play2_Pokemons) == 3 and x > 500 and x < 610 and y < 660 and y > 600:
 				self.page = 2
-
+				#self.P1P.append()
 			# Page 3: Map and Algo
 
 
