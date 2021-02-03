@@ -8,10 +8,18 @@ class Pokemon():
 		self.x = x
 		self.y = y
 		self.pid = pid
-		self.setupPokemon(pid)
-		self.cur_HP = self.HP
 		self.cur_MP = 0
 		self.uid = uid
+		self.fire_mark = False
+		self.poison_mark = False
+		self.poison_dmg = 0
+		self.fire_turn = 0
+		self.poison_turn = 0
+		self.buff_turn = 0
+		self.setupPokemon(pid)
+		self.cur_HP = self.HP
+		self.dattack = self.attack
+		self.ddefence = self.defence
 
 	def setupPokemon(self, pid):
 		# pi ka qiu
@@ -62,7 +70,6 @@ class Pokemon():
 		# tu tou long
 		if pid == 5:
 			self.attack = 48
-			self.dattack = 48
 			self.defence = 10
 			self.HP = 228
 			self.MP = 0
@@ -126,7 +133,6 @@ class Pokemon():
 		# tian kong long
 		if pid == 12:
 			self.attack = 50
-			self.dattack = 50
 			self.defence = 17
 			self.HP = 340
 			self.MP = 0
@@ -154,7 +160,6 @@ class Pokemon():
 		# kuai long
 		if pid == 15:
 			self.attack = 52
-			self.dattack = 52
 			self.defence = 27
 			self.HP = 400
 			self.MP = 0
