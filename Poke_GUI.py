@@ -5,18 +5,21 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from Pokemon import Pokemon
 
+import Spell
+
 root3 = pow(3, 0.5) # root 3
 root6 = pow(6, 0.5) # root 6
 
 # basic map index for common elements
 spring = [[0, 5], [19, 4]]
-fire = [[10, 5]]
-firer = [[8, 5], [9, 4], [9, 5], [11, 4], [11, 5], [12, 5]]
+fire = [[0, 7], [19, 2]]
+firer = [[8, 5], [9, 4], [9, 5], [11, 4], [11, 5], [12, 5], [10, 5],[0,6],[0,8],[1,6],[1,7],[2,6],[2,7],[2,8],[3,6],[3,7],[4,7],
+[19,1],[19,3],[18,2],[18,3],[17,1],[17,2],[17,3],[16,2],[16,3],[15,2]]
 water = [[0,4],[1,4],[2,5],[3,5],[4,6],[5,6],[6,7],[7,7],[8,8],[9,8],[10,9],[11,9],[12,9],[13,8],[14,8],[15,7],[16,7],[17,6],[18,6],[19,5],
 [18,5],[17,4],[16,4],[15,3],[14,3],[13,2],[12,2],[11,1],[10,1],[9,0],[8,0],[7,0],[6,1],[5,1],[4,2],[3,2],[2,3],[1,3]]
 telepot = [[0,9],[19,0]]
 # avoid starting point trap
-s_void = [[0,0],[1,0],[2,0],[19,9],[18,9],[17,9],[3,0],[4,1],[16,9],[15,8]]
+s_void = [[0,0],[1,0],[2,0],[19,9],[18,9],[17,9],[3,0],[4,1],[3,1],[2,1],[16,9],[15,8],[16,8],[17,8]]
 
 
 # Basic GUI class
@@ -190,8 +193,8 @@ class Poke_GUI(QWidget):
 			# below the value of HP and MP
 			p.drawText(1448, 85 + n * i, str(pkmn.cur_HP) + '/' + str(pkmn.HP))
 			p.drawText(1448, 105 + n * i, str(pkmn.cur_MP) + '/100' )
-			p.drawText(1240, 120 + n * i, str(pkmn.attack))
-			p.drawText(1260, 120 + n * i, str(pkmn.defence))
+			p.drawText(1240, 120 + n * i, str(pkmn.cur_att))
+			p.drawText(1260, 120 + n * i, str(pkmn.cur_def))
 			pimg = QPixmap('Pics/pic' + str(pkmn.pid) + '.jpg')
 			p.drawPixmap(QRect(1400, 30 + n * i, 40, 40 ), pimg)
 			p.setBrush(QColor(255, 0, 0))
@@ -287,34 +290,49 @@ class Poke_GUI(QWidget):
 							self.target_poke = i
 				# selected poke flag == true then ...
 				else:
-					# check whether switch to another pokemon
+					# check whether switch to another pokemon / require no buttons pushed
 					another_flag = False
-					for i in self.P1P:
-						if point[0] == i.x and point[1] == i.y:
-							another_flag = True
-							self.target_poke = i
-							self.move, self.spell1, self.spell2, self.ulti = False, False, False, False
-					for i in self.P2P:
-						if point[0] == i.x and point[1] == i.y:
-							another_flag = True
-							self.target_poke = i
-							self.move, self.spell1, self.spell2, self.ulti = False, False, False, False
-					p1finish = True
-					# Player 1 moved first then Player 2, check Player 1 finished
-					for i in self.p1uid:
-						if i not in self.moved:
-							p1finish = False
+					#print(self.spell1,self.spell2,self.ulti)
+					if not self.spell1 and not self.spell2 and not self.ulti:
+						for i in self.P1P:
+							if point[0] == i.x and point[1] == i.y:
+								another_flag = True
+								self.target_poke = i
+						for i in self.P2P:
+							if point[0] == i.x and point[1] == i.y:
+								another_flag = True
+								self.target_poke = i
+
+
 					# if Player click on one pokemon and one action button then ...
 					if another_flag or self.checkButtonClick(x, y):
 						pass
-					elif (self.move or self.spell1 or self.spell2 or self.ulti) and ((self.target_poke.uid in self.p1uid and not p1finish) or p1finish) and self.target_poke.uid not in self.moved:
+					elif (self.move or self.spell1 or self.spell2 or self.ulti) and (self.target_poke.uid in self.p1uid or len(self.p1uid) <= len(self.moved)) and self.target_poke.uid not in self.moved:
 						# action holding - dont move but attack
 						if self.move:
 							pass
+
+						# Spelling algorithm
+						elif self.spell1 or self.spell2 or self.ulti:
+							if self.spell1:
+								type_spell = 1
+							elif self.spell2:
+								type_spell = 2
+							elif self.ulti:
+								type_spell = 3
+							if self.target_poke.pid == 0:
+								Spell.id1_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 1:
+								Spell.id2_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved, self.tree)
+
+							self.spell1, self.spell2, self.ulti = False, False, False
+															
+
+
 							
 					
 					# short case for movement
-					elif self.checkMovement(point[0], point[1]) and ((self.target_poke.uid in self.p1uid and not p1finish) or p1finish) and self.target_poke.uid not in self.moved:
+					elif self.checkMovement(point[0], point[1]) and (self.target_poke.uid in self.p1uid or len(self.p1uid) <= len(self.moved)) and self.target_poke.uid not in self.moved:
 						self.movePokemon(point[0], point[1])
 						self.attackEnemy()
 
@@ -330,10 +348,11 @@ class Poke_GUI(QWidget):
 					self.endOfRound(a, self.P2P)
 
 			for a in self.P1P:
-				if a.cur_HP < 0:
+				if a.cur_HP == 0:
 					self.P1P.remove(a)
+					self.p1uid.remove(a.uid)
 			for a in self.P2P:
-				if a.cur_HP < 0:
+				if a.cur_HP == 0:
 					self.P2P.remove(a)
 
 
@@ -364,16 +383,11 @@ class Poke_GUI(QWidget):
 
 	# check whether two points are adjacent
 	def checkAdjacent(self, x, y, x_c, y_c):
-		if x_c % 2 == 0:
-			if [x, y] in [[x_c - 1, y_c - 1], [x_c - 2, y_c], [x_c - 1, y_c], [x_c + 1, y_c - 1], [x_c + 1, y_c], [x_c + 2, y_c]]:
-				return True
-			else:
-				return False
-		if x_c % 2 == 1:
-			if [x, y] in [[x_c - 1, y_c], [x_c - 2, y_c], [x_c - 1, y_c + 1], [x_c + 1, y_c], [x_c + 2, y_c], [x_c + 1, y_c + 1]]:
-				return True
-			else:
-				return False
+		if [x, y] in Spell.rangeCal(x_c, y_c, 1):
+			return True
+		else:
+			return False
+
 
 	# attacking algorithm
 	def attackEnemy(self):
@@ -399,7 +413,7 @@ class Poke_GUI(QWidget):
 	# Damage calculate - over health
 	def dmgCal(self, my, tar):
 		if self.checkAdjacent(tar.x, tar.y, my.x, my.y):
-			tar.cur_HP = tar.cur_HP - (my.attack - tar.defence)
+			tar.cur_HP = tar.cur_HP - (my.cur_att - tar.cur_def)
 			if my.cur_MP + 4 > 100:
 				my.cur_MP = 100
 			else:
@@ -417,13 +431,10 @@ class Poke_GUI(QWidget):
 		spring_range = [[1, 4], [1, 5], [2, 5], [17, 4], [18, 4], [18, 5]]
 		# fire dmg
 		if [i.x, i.y] in firer and i.type != 'fire' and i.type2 != 'fire':
-			i.cur_HP = i.cur_HP - 40
+			i.cur_HP = Spell.MHCal(i.cur_HP, 0, 30, i.HP) 
 		# spring effect
 		if [i.x, i.y] in spring_range:
-			if i.cur_HP + 10 > i.HP:
-				i.cur_HP = i.HP
-			else:
-				i.cur_HP = i.cur_HP + 10
+			i.cur_HP = Spell.MHCal(i.cur_HP, 1, 20, i.HP)
 		# telepot effect
 		if [i.x, i.y] == [0, 9]:
 			i.x, i.y = 19, 0
@@ -431,40 +442,74 @@ class Poke_GUI(QWidget):
 			i.x, i.y = [0, 9]
 		# grass effect
 		if i.type == 'grass' or i.type2 == 'grass':
-			r = int(random.random() * 4)
-			if i.cur_HP + r > i.HP:
-				i.cur_HP = i.HP
-			else:
-				i.cur_HP = i.cur_HP + r
+			r = int(random.random() * 4) + 1
+			i.cur_HP = Spell.MHCal(i.cur_HP, 1, r, i.HP)
 		# fairy recover
 		if i.type == 'fairy' or i.type2 == 'fairy':
-			if i.cur_MP + 4 > 100:
-				i.cur_MP = 100
-			else:
-				i.cur_MP = i.cur_MP + 4
+			i.cur_MP = Spell.MHCal(i.cur_MP, 1, 4, 100)
 		# dragon effect
 		if i.type == 'dragon' or i.type2 == 'dragon':
 			dra_flag = False
 			for a in dra:
 				if self.checkAdjacent(a.x, a.y, i.x, i.y):
 					dra_flag = True
-					i.attack = i.dattack + 15
+					# dmg buff
+					i.dra_att = i.attack + 15
+					i.cur_att = i.dra_att
 			if not dra_flag:
-				i.attack = i.dattack
+				i.dra_att = i.attack
+				i.cur_att = i.dra_att
 		# final MP recover
-		if i.cur_MP + 4 > 100:
-			i.cur_MP = 100
-		else:
-			i.cur_MP = i.cur_MP + 4
+		i.cur_MP = Spell.MHCal(i.cur_MP, 1, 4, 100)
 
+		# Buff Cal
+		for i in self.P1P:
+			self.buffCal(i)
+		for i in self.P2P:
+			self.buffCal(i)
+
+
+	def buffCal(self, it):
+		# Attack Defence Buff
+		if it.buff_turn != 0:
+			if it.buff_att != 0:
+				if it.type == 'dragon' or it.type2 == 'dragon':
+					it.cur_att = belowZero(it.dra_att + it.buff_att)
+				else:
+					it.cur_att = belowZero(it.attack + it.buff_att)
+			if it.buff_def != 0:
+				it.cur_def = belowZero(it.defence + it.buff_def)
+			it.buff_turn -= 1
+		else:
+			if it.type == 'dragon' or it.type2 == 'dragon':
+				it.cur_att = it.dra_att
+			else:
+				it.cur_att = it.attack
+			it.curdef = it.defence
+		# fire buff
+		if it.fire_turn != 0:
+			it.cur_HP = Spell.MHCal(it.cur_HP, 0, it.fire_dmg, it.HP)
+			it.fire_turn -= 1
+
+		# poison buff
+		if it.poison_turn != 0:
+			ddmg = it.poison_dmg * it.poison_mark
+			it.cur_HP = Spell.MHCal(it.cur_HP, 0, ddmg, it.HP)
+			if it.posion_mark < 5:
+				it.poison_mark += 1
+			it.poison_turn -= 1
+
+
+	
 
 
 	# check which button is clicked - Page 3
 	def checkButtonClick(self, x, y):
 		flag = False
 		if x > 300 and x < 420 and y > 800 and y < 860:
-			self.attackEnemy()
-			self.moved.append(self.target_poke.uid)
+			if self.select_poke and (self.target_poke.uid in self.p1uid or len(self.p1uid) <= len(self.moved)) and self.target_poke.uid not in self.moved:
+				self.attackEnemy()
+				self.moved.append(self.target_poke.uid)
 			flag = True
 		elif x > 500 and x < 620 and y > 800 and y < 860:
 			self.move, self.spell1, self.spell2, self.ulti = False, True, False, False
@@ -516,3 +561,16 @@ class Poke_GUI(QWidget):
 		y_off = root3 / 2 - root6 / 4
 		area = QRect(x - (root6 - 2) / 4 * l, y + y_off * l, l * root6 / 2, l * root6 / 2)
 		p.drawPixmap(area, pimg)
+
+
+def belowZero(val):
+	if val < 0:
+		return 0
+	else:
+		return val
+
+
+
+
+
+
