@@ -11,8 +11,8 @@ class Pokemon():
 		self.cur_MP = 100
 		self.uid = uid
 		self.fire_mark = False
-		self.poison_mark = 0
-		self.poison_dmg = 0
+		self.poison_mark = 1
+		self.poison_dmg = 10
 		self.fire_turn = 0
 		self.fire_dmg = 0
 		self.poison_turn = 0
@@ -87,9 +87,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'normal'
 			self.type2 = 'normal'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '直冲拳'
+			self.name2 = '强化'
+			self.name3 = '睡觉'
 
 		# tu tou long
 		if pid == 5:
@@ -100,9 +100,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'dragon'
 			self.type2 = 'normal'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '龙爪'
+			self.name2 = '恐惧颜'
+			self.name3 = '龙之虹吸'
 			
 
 		# du she
@@ -113,9 +113,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'poison'
 			self.type2 = 'normal'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '毒镖'
+			self.name2 = '魔法震荡'
+			self.name3 = '毒箭'
 
 		# zhen fu pai pai
 		if pid == 7:

@@ -321,7 +321,8 @@ def id3_ult(P1P, P2P, m_p, moved):
 			break
 	moved.append(m_p.uid)
 
-def id4_spell(map, P1P, P2P, m_p, tar, t, moved):
+# ka bi shou
+def id4_spell(P1P, P2P, m_p, tar, t, moved):
 	if m_p.uid < 4:
 		enemy = P2P
 	else:
@@ -356,10 +357,81 @@ def id4_spell(map, P1P, P2P, m_p, tar, t, moved):
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
+#tu tou long
+def id5_spell(P1P, P2P, m_p, tar, t, moved):
+	if m_p.uid < 4:
+		enemy = P2P
+	else:
+		enemy = P1P
 
+	tar_on = False
+	for i in enemy:
+		if tar[0] == i.x and tar[1] == i.y:
+			tar_poke = i
+			tar_on = True
+			print("hit on")
 
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP1 and tar_on:
+			dmg = 40
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, dmg, tar_poke.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		for i in enemy:
+			if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 2):
+				i.buff_turn = 1
+				i.buff_def = -10
+		m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+		moved.append(m_p.uid)
+	elif t == 3:
+		line = checkInLine(m_p, tar)
 
+		if line and m_p.cur_MP >= MP1 and line[2] < 4:
+			dmg_t = 0
+			dmg = 80
+			# get target points in line using line[1] which 1 distance adjacent to current point
+			l = findLinePoints(m_p, line[1], 3)
+			for i in enemy:
+				if [i.x, i.y] in l:
+					i.cur_HP  = MHCal(i.cur_HP, 0, belowZero(dmg - i.cur_def), i.HP)
+					dmg_t += belowZero(dmg - i.cur_def)
+					print("Dragon fire!")
+			m_p.cur_HP = MHCal(m_p.cur_HP, 1, int(dmg_t * 0.3), m_p.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
 
+# du she
+def id6_spell(P1P, P2P, m_p, tar, t, moved):
+	if m_p.uid < 4:
+		enemy = P2P
+	else:
+		enemy = P1P
+
+	tar_on = False
+	for i in enemy:
+		if tar[0] == i.x and tar[1] == i.y:
+			tar_poke = i
+			tar_on = True
+			print("hit on")
+
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP1 and tar_on:
+			tar_poke.poison_turn += 3
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+
+	elif t == 2:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2 and tar_on:
+			tar_poke.cur_MP = MHCal(m_p.cur_MP, 0, 28, 100)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+
+	elif t == 3:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and m_p.cur_MP >= MP3 and tar_on:
+			tar_poke.poison_turn += 7
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
 
 
 # cur_pos: [x, y], enemy: P1P

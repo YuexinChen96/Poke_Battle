@@ -184,6 +184,8 @@ class Poke_GUI(QWidget):
 				p.setPen(QColor(0,0,0))
 			p.drawText(905, 840, self.target_poke.name3)
 
+		p.setPen(QColor(0,0,0))
+
 		# draw Pokemons on Map
 		for i in self.P1P:
 			x, y = self.indexToPos(i.x, i.y)
@@ -251,6 +253,7 @@ class Poke_GUI(QWidget):
 
 	# buttons click events - UI part
 	def mousePressEvent(self, e):
+
 		# left click event
 		if e.buttons() == QtCore.Qt.LeftButton:
 			# get x, y pos
@@ -352,7 +355,11 @@ class Poke_GUI(QWidget):
 							elif self.target_poke.pid == 3:
 								Spell.id3_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved, self.turn)
 							elif self.target_poke.pid == 4:
-								Spell.id4_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+								Spell.id4_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 5:
+								Spell.id5_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 6:
+								Spell.id6_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 
 
 
@@ -370,26 +377,26 @@ class Poke_GUI(QWidget):
 					else:
 						self.spell1, self.spell2, self.ulti = False, False, False
 
-			# check all six pokemons finished
-			if len(self.moved) == len(self.P1P) + len(self.P2P):
-				self.moved = []
-				self.turn = self.turn + 1
-				self.water_extra = []
-				for a in self.P1P:
-					self.endOfRound(a, self.P1P)
-					# check pokemon alive
-				for a in self.P2P:
-					self.endOfRound(a, self.P2P)
+				# check all six pokemons finished
+				if len(self.moved) == len(self.P1P) + len(self.P2P):
+					self.moved = []
+					self.turn = self.turn + 1
+					self.water_extra = []
+					for a in self.P1P:
+						self.endOfRound(a, self.P1P)
+						# check pokemon alive
+					for a in self.P2P:
+						self.endOfRound(a, self.P2P)
 				
 
 
-			for a in self.P1P:
-				if a.cur_HP == 0:
-					self.P1P.remove(a)
-					self.p1uid.remove(a.uid)
-			for a in self.P2P:
-				if a.cur_HP == 0:
-					self.P2P.remove(a)
+				for a in self.P1P:
+					if a.cur_HP == 0:
+						self.P1P.remove(a)
+						self.p1uid.remove(a.uid)
+				for a in self.P2P:
+					if a.cur_HP == 0:
+						self.P2P.remove(a)
 
 
 
@@ -530,9 +537,12 @@ class Poke_GUI(QWidget):
 		if it.poison_turn != 0:
 			ddmg = it.poison_dmg * it.poison_mark
 			it.cur_HP = Spell.MHCal(it.cur_HP, 0, ddmg, it.HP)
-			if it.posion_mark < 5:
+			if it.poison_mark < 5:
 				it.poison_mark += 1
 			it.poison_turn -= 1
+			print(it.poison_turn, ddmg)
+		elif it.poison_turn == 0:
+			it.poison_mark = 1
 
 
 	
