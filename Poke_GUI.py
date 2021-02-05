@@ -154,34 +154,35 @@ class Poke_GUI(QWidget):
 						self.drawPolygonByPos(80 + c * 120, 20 * root3 + a * 40 * root3, 40, p)
 						self.drawPokemon(80 + c * 120, 20 * root3 + a * 40 * root3, 40, p, 'Pics/' + pic_ + '.jpg')
 		# Control buttons ---- bottom
-		p.setFont(QFont("Arial", 20))
+		p.setFont(QFont("Arial", 16))
 		p.drawRect(150, 790, 80, 80)
 		p.drawRect(300, 800, 120, 60)
 		p.drawRect(500, 800, 120, 60)
 		p.drawRect(700, 800, 120, 60)
 		p.drawRect(900, 800, 120, 60)
-		p.drawText(320, 840, 'Hold')
-		if self.spell1:
-			p.setPen(QColor(255,0,0))
-		else:
-			p.setPen(QColor(0,0,0))
-		p.drawText(520, 840, 'Spell')
-		if self.spell2:
-			p.setPen(QColor(255,0,0))
-		else:
-			p.setPen(QColor(0,0,0))
-		p.drawText(720, 840, 'Spell_')
-		if self.ulti:
-			p.setPen(QColor(255,0,0))
-		else:
-			p.setPen(QColor(0,0,0))
-		p.drawText(920, 840, '*Ulti*')
+		
+		
 		p.setPen(QColor(0,0,0))
 		p.drawText(1300, 840, str(self.turn) + ' Round')
 		if self.select_poke:
 			pimg = QPixmap('Pics/pic' + str(self.target_poke.pid) + '.jpg')
 			p.drawPixmap(QRect(150, 790, 80, 80), pimg)
-
+			p.drawText(340, 840, '保持')
+			if self.spell1:
+				p.setPen(QColor(255,0,0))
+			else:
+				p.setPen(QColor(0,0,0))
+			p.drawText(505, 840, self.target_poke.name1)
+			if self.spell2:
+				p.setPen(QColor(255,0,0))
+			else:
+				p.setPen(QColor(0,0,0))
+			p.drawText(705, 840, self.target_poke.name2)
+			if self.ulti:
+				p.setPen(QColor(255,0,0))
+			else:
+				p.setPen(QColor(0,0,0))
+			p.drawText(905, 840, self.target_poke.name3)
 
 		# draw Pokemons on Map
 		for i in self.P1P:

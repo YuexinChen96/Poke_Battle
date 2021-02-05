@@ -36,6 +36,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'elec'
 			self.type2 = 'normal'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# jie ni gui
 		if pid == 1:
@@ -45,6 +48,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'water'
 			self.type2 = 'normal'
+			self.name1 = '水炮'
+			self.name2 = '求雨'
+			self.name3 = '冲浪'
 
 		# xiao huo long
 		if pid == 2:
@@ -54,6 +60,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'fire'
 			self.type2 = 'normal'
+			self.name1 = '喷射火焰'
+			self.name2 = '火焰漩涡'
+			self.name3 = '大字火'
 
 		# miao wa zhong zi
 		if pid == 3:
@@ -63,6 +72,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'grass'
 			self.type2 = 'normal'
+			self.name1 = '藤鞭'
+			self.name2 = '种子'
+			self.name3 = '阳光烈焰'
 
 			self.ult = False
 			self.cur_turn = 0
@@ -75,6 +87,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'normal'
 			self.type2 = 'normal'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# tu tou long
 		if pid == 5:
@@ -85,6 +100,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'dragon'
 			self.type2 = 'normal'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 			
 
 		# du she
@@ -95,6 +113,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'poison'
 			self.type2 = 'normal'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# zhen fu pai pai
 		if pid == 7:
@@ -104,6 +125,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'elec'
 			self.type2 = 'normal'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# bi diao
 		if pid == 8:
@@ -113,6 +137,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'fly'
 			self.type2 = 'normal'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# pang ding
 		if pid == 9:
@@ -122,6 +149,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'fairy'
 			self.type2 = 'normal'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# gu la duo
 		if pid == 10:
@@ -131,6 +161,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'fire'
 			self.type2 = 'normal'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# hai huang ya
 		if pid == 11:
@@ -140,6 +173,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'water'
 			self.type2 = 'normal'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# tian kong long
 		if pid == 12:
@@ -150,6 +186,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'dragon'
 			self.type2 = 'fly'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# luo qi ya
 		if pid == 13:
@@ -159,6 +198,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'water'
 			self.type2 = 'fly'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# lei jing ling
 		if pid == 14:
@@ -168,6 +210,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'elec'
 			self.type2 = 'normal'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# kuai long
 		if pid == 15:
@@ -178,6 +223,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'elec'
 			self.type2 = 'dragon'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# mei na si
 		if pid == 16:
@@ -187,6 +235,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'water'
 			self.type2 = 'fairy'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# feng huang
 		if pid == 17:
@@ -196,6 +247,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'fire'
 			self.type2 = 'fly'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# xue la bi
 		if pid == 18:
@@ -205,6 +259,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'grass'
 			self.type2 = 'fairy'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		# ji la qi
 		if pid == 19:
@@ -214,6 +271,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'star'
 			self.type2 = 'star'
+			self.name1 = '电击'
+			self.name2 = '钢尾'
+			self.name3 = '打雷'
 
 		
 

@@ -256,6 +256,7 @@ def id2_spell(map, P1P, P2P, m_p, tar, t, moved):
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
+# miao wa zhong zi
 def id3_spell(map, P1P, P2P, m_p, tar, t, moved, turn):
 	if m_p.uid < 4:
 		enemy = P2P
