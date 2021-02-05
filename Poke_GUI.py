@@ -21,6 +21,9 @@ telepot = [[0,9],[19,0]]
 # avoid starting point trap
 s_void = [[0,0],[1,0],[2,0],[19,9],[18,9],[17,9],[3,0],[4,1],[3,1],[2,1],[16,9],[15,8],[16,8],[17,8]]
 
+tree = []
+
+
 
 # Basic GUI class
 class Poke_GUI(QWidget):
@@ -50,9 +53,12 @@ class Poke_GUI(QWidget):
 		self.initUI()
 		self.page = 0
 		self.map = [['0' for x in range(10)] for y in range(20)]
-		self.tree = []
+
 		# game related
 		self.turn = 0
+		# 2-D arrays used for store logical board
+		self.init_logical_Graph()
+		
 
 
 	def initUI(self):
@@ -131,8 +137,7 @@ class Poke_GUI(QWidget):
 
 	# draw basic blocks and control buttons
 	def Mapping(self, e, p):
-		# 2-D arrays used for store logical board
-		self.init_logical_Graph()
+		
 
 		p.setBrush(QColor(255,255,255))
 		# Basic Polygons - Playing area
@@ -152,13 +157,26 @@ class Poke_GUI(QWidget):
 		p.setFont(QFont("Arial", 20))
 		p.drawRect(150, 790, 80, 80)
 		p.drawRect(300, 800, 120, 60)
-		p.drawText(320, 840, 'Hold')
 		p.drawRect(500, 800, 120, 60)
-		p.drawText(520, 840, 'Spell')
 		p.drawRect(700, 800, 120, 60)
-		p.drawText(720, 840, 'Spell_')
 		p.drawRect(900, 800, 120, 60)
+		p.drawText(320, 840, 'Hold')
+		if self.spell1:
+			p.setPen(QColor(255,0,0))
+		else:
+			p.setPen(QColor(0,0,0))
+		p.drawText(520, 840, 'Spell')
+		if self.spell2:
+			p.setPen(QColor(255,0,0))
+		else:
+			p.setPen(QColor(0,0,0))
+		p.drawText(720, 840, 'Spell_')
+		if self.ulti:
+			p.setPen(QColor(255,0,0))
+		else:
+			p.setPen(QColor(0,0,0))
 		p.drawText(920, 840, '*Ulti*')
+		p.setPen(QColor(0,0,0))
 		p.drawText(1300, 840, str(self.turn) + ' Round')
 		if self.select_poke:
 			pimg = QPixmap('Pics/pic' + str(self.target_poke.pid) + '.jpg')
@@ -211,11 +229,11 @@ class Poke_GUI(QWidget):
 	# generate water, tree, springs
 	# give string to logical map
 	def init_logical_Graph(self):
-		while(len(self.tree) < 60):
+		while(len(tree) < 60):
 			x = int(random.random() * 20)
 			y = int(random.random() * 10)
-			if [x, y] not in spring and [x, y] not in fire and [x, y] not in telepot and [x, y] not in s_void and [x, y] not in self.tree and [x, y] not in water and [x, y] not in firer:
-				self.tree.append([x, y])
+			if [x, y] not in spring and [x, y] not in fire and [x, y] not in telepot and [x, y] not in s_void and [x, y] not in tree and [x, y] not in water and [x, y] not in firer:
+				tree.append([x, y])
 		for i in spring:
 			self.map[i[0]][i[1]] = 'spring'
 		for i in fire:
@@ -224,7 +242,7 @@ class Poke_GUI(QWidget):
 			self.map[i[0]][i[1]] = 'water'
 		for i in telepot:
 			self.map[i[0]][i[1]] = 'telepot'
-		for i in self.tree:
+		for i in tree:
 			self.map[i[0]][i[1]] = 'tree'
 		for i in firer:
 			self.map[i[0]][i[1]] = 'firer'
@@ -267,9 +285,9 @@ class Poke_GUI(QWidget):
 				self.P1P.append(Pokemon(1, 0, self.Play1_Pokemons[0][1] * 10 + self.Play1_Pokemons[0][0], 1))
 				self.P1P.append(Pokemon(2, 0, self.Play1_Pokemons[1][1] * 10 + self.Play1_Pokemons[1][0], 2))
 				self.P1P.append(Pokemon(0, 0, self.Play1_Pokemons[2][1] * 10 + self.Play1_Pokemons[2][0], 3))
-				self.P2P.append(Pokemon(18, 9, self.Play2_Pokemons[0][1] * 10 + self.Play2_Pokemons[0][0], 4))
-				self.P2P.append(Pokemon(17, 9, self.Play2_Pokemons[1][1] * 10 + self.Play2_Pokemons[1][0], 5))
-				self.P2P.append(Pokemon(19, 9, self.Play2_Pokemons[2][1] * 10 + self.Play2_Pokemons[2][0], 6))
+				self.P2P.append(Pokemon(4, 1, self.Play2_Pokemons[0][1] * 10 + self.Play2_Pokemons[0][0], 4)) # 18, 9
+				self.P2P.append(Pokemon(3, 1, self.Play2_Pokemons[1][1] * 10 + self.Play2_Pokemons[1][0], 5)) # 17, 9
+				self.P2P.append(Pokemon(2, 1, self.Play2_Pokemons[2][1] * 10 + self.Play2_Pokemons[2][0], 6)) # 19, 9
 				for i in self.P1P:
 					self.p1uid.append(i.uid) # Player 1 Pokemon list - used for later
 
@@ -321,10 +339,11 @@ class Poke_GUI(QWidget):
 							elif self.ulti:
 								type_spell = 3
 							if self.target_poke.pid == 0:
-								Spell.id1_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+								Spell.id0_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 							elif self.target_poke.pid == 1:
-								Spell.id2_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved, self.tree)
-
+								Spell.id1_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 2:
+								Spell.id2_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 							self.spell1, self.spell2, self.ulti = False, False, False
 															
 
@@ -335,6 +354,9 @@ class Poke_GUI(QWidget):
 					elif self.checkMovement(point[0], point[1]) and (self.target_poke.uid in self.p1uid or len(self.p1uid) <= len(self.moved)) and self.target_poke.uid not in self.moved:
 						self.movePokemon(point[0], point[1])
 						self.attackEnemy()
+
+					else:
+						self.spell1, self.spell2, self.ulti = False, False, False
 
 			# check all six pokemons finished
 			if len(self.moved) == 6:
@@ -375,8 +397,9 @@ class Poke_GUI(QWidget):
 	# check next position legal or not
 	def checkMovement(self, x, y):
 		if self.checkAdjacent(x, y, self.target_poke.x, self.target_poke.y):
-			if [x, y] not in spring and [x, y] not in telepot and [x, y] not in fire:
-				if self.target_poke.type != 'fly' and self.target_poke.type2 != 'fly' and [x, y] in self.tree:
+			
+			if self.map[x][y] != 'spring' and self.map[x][y] != 'telepot' and self.map[x][y] != 'fire':
+				if self.target_poke.type != 'fly' and self.target_poke.type2 != 'fly' and self.map[x][y] == 'tree':
 					return False
 				else:
 					return True
@@ -442,7 +465,7 @@ class Poke_GUI(QWidget):
 			i.x, i.y = [0, 9]
 		# grass effect
 		if i.type == 'grass' or i.type2 == 'grass':
-			r = int(random.random() * 4) + 1
+			r = int(random.random() * 4) + 2
 			i.cur_HP = Spell.MHCal(i.cur_HP, 1, r, i.HP)
 		# fairy recover
 		if i.type == 'fairy' or i.type2 == 'fairy':

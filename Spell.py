@@ -54,7 +54,7 @@ def MHCal(tar, iod, n, full):
 
 
 # m_p is package of pokemon / tar is index of click
-def id1_spell(P1P, P2P, m_p, tar, t, moved):
+def id0_spell(P1P, P2P, m_p, tar, t, moved):
 	# check hit on target
 	if m_p.uid < 4:
 		enemy = copy.copy(P2P)
@@ -106,7 +106,7 @@ def id1_spell(P1P, P2P, m_p, tar, t, moved):
 			moved.append(m_p.uid)
 
 
-def id2_spell(P1P, P2P, m_p, tar, t, moved, tree):
+def id1_spell(map, P1P, P2P, m_p, tar, t, moved):
 	if m_p.uid < 4:
 		enemy = P2P
 	else:
@@ -115,8 +115,11 @@ def id2_spell(P1P, P2P, m_p, tar, t, moved, tree):
 	if t == 1:
 		# check line clicked
 		line = checkInLine(m_p, tar)
+
+
 		
 		if line and m_p.cur_MP >= 20:
+			print(line[0], line[2])
 			if line[2] < 4:
 				dmg = 60
 				# get target points in line using line[1] which 1 distance adjacent to current point
@@ -132,18 +135,12 @@ def id2_spell(P1P, P2P, m_p, tar, t, moved, tree):
 		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= 20:
 			x, y = tar[0], tar[1]
 			if x % 2 == 0:
-				l = [[x - 1,y - 1],[x - 2,y],[x - 1,y],[x + 1,y - 1],[x + 1,y],[x + 2,y]]
+				l = [[x - 1,y - 1],[x - 2,y],[x - 1,y],[x + 1,y - 1],[x + 1,y],[x + 2,y],[x, y]]
 			if x % 2 == 1:
-				l = [[x - 1, y],[x - 2, y],[x + 1, y],[x + 2,y],[x - 1,y + 1],[x + 1,y + 1]]
+				l = [[x - 1, y],[x - 2, y],[x + 1, y],[x + 2,y],[x - 1,y + 1],[x + 1,y + 1],[x, y]]
 			for i in l:
-				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 20 and i not in Poke_GUI.spring and i not in Poke_GUI.fire and i not in Poke_GUI.water and i not in Poke_GUI.telepot and i not in tree:
-					if i in Poke_GUI.firer:
-						Poke_GUI.firer.remove(i)
-					Poke_GUI.water.append(i)
-			if tar not in Poke_GUI.spring and tar not in Poke_GUI.fire and tar not in Poke_GUI.water and tar not in Poke_GUI.telepot and tar not in tree:
-				if tar in Poke_GUI.firer:
-					Poke_GUI.firer.remove(tar)
-				Poke_GUI.water.append(tar)
+				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 20 and map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'water' and map[i[0]][i[1]] != 'telepot' and map[i[0]][i[1]] != 'tree':
+					map[i[0]][i[1]] = 'water'
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 20, 100)
 			moved.append(m_p.uid)
 
@@ -211,7 +208,43 @@ def id2_spell(P1P, P2P, m_p, tar, t, moved, tree):
 			moved.append(m_p.uid)
 
 
+def id2_spell(map, P1P, P2P, m_p, tar, t, moved):
+	if m_p.uid < 4:
+		enemy = P2P
+	else:
+		enemy = P1P
+	tar_on = False
+	for i in enemy:
+		if tar[0] == i.x and tar[1] == i.y:
+			tar_poke = i
+			tar_on = True
+			print("hit on")
+	if t == 1:
+		line = checkInLine(m_p, tar)
+		
+		if line and m_p.cur_MP >= 20:
+			if line[2] < 4:
+				dmg = 60
+				# get target points in line using line[1] which 1 distance adjacent to current point
+				l = findLinePoints(m_p, line[1], 3)
+				for i in enemy:
+					if [i.x, i.y] in l:
+						i.cur_HP  = MHCal(i.cur_HP, 0, belowZero(dmg - i.cur_def), i.HP)
+				for i in l:
+					if map[i[0]][i[1]] == 'tree':
+						map[i[0]][i[1]] = '0'
 
+				m_p.cur_MP = MHCal(m_p.cur_MP, 0, 20, 100)
+				moved.append(m_p.uid)
+
+	elif t == 2:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= 20 and tar_on:
+			dmg = 40
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
+			m_p.buff_turn = 3
+			m_p.buff_def = 5
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 20, 100)
+			moved.append(m_p.uid)
 
 
 
