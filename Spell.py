@@ -1,6 +1,10 @@
 import copy
 import Poke_GUI
 
+MP1 = 20
+MP2 = 20
+MP3 = 80
+
 def rangeCal(x, y, n):
 	if n == 1:
 		if x % 2 == 0:
@@ -70,7 +74,7 @@ def id0_spell(P1P, P2P, m_p, tar, t, moved):
 	# 0 spell 1
 	if t == 1:
  		# check mana range hit on
- 		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= 20 and tar_on:
+ 		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP1 and tar_on:
  			dmg = 60
  			cur_pos = [m_p.x, m_p.y]
  			nt = find_next(cur_pos, enemy, 2)
@@ -86,23 +90,23 @@ def id0_spell(P1P, P2P, m_p, tar, t, moved):
  				dmg = dmg - 15
 
  				nt = find_next(cur_pos, enemy, 1)
- 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 20, 100)
+ 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
  			moved.append(m_p.uid)
 
 	elif t == 2:
-		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= 20 and tar_on:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2 and tar_on:
 			dmg = 40
 			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
 			m_p.buff_turn = 3
 			m_p.buff_def = 5
-			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 20, 100)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 
 	elif t == 3:
-		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= 80 and tar_on:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP3 and tar_on:
 			dmg = 120
 			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
-			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 80, 100)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
 
@@ -118,7 +122,7 @@ def id1_spell(map, P1P, P2P, m_p, tar, t, moved):
 
 
 		
-		if line and m_p.cur_MP >= 20:
+		if line and m_p.cur_MP >= MP1:
 			print(line[0], line[2])
 			if line[2] < 4:
 				dmg = 60
@@ -128,11 +132,11 @@ def id1_spell(map, P1P, P2P, m_p, tar, t, moved):
 					if [i.x, i.y] in l:
 						i.cur_HP  = MHCal(i.cur_HP, 0, belowZero(dmg - i.cur_def), i.HP)
 						print("water gun!")
-				m_p.cur_MP = MHCal(m_p.cur_MP, 0, 20, 100)
+				m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
 				moved.append(m_p.uid)
 
 	elif t == 2:
-		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= 20:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2:
 			x, y = tar[0], tar[1]
 			if x % 2 == 0:
 				l = [[x - 1,y - 1],[x - 2,y],[x - 1,y],[x + 1,y - 1],[x + 1,y],[x + 2,y],[x, y]]
@@ -141,7 +145,7 @@ def id1_spell(map, P1P, P2P, m_p, tar, t, moved):
 			for i in l:
 				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 20 and map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'water' and map[i[0]][i[1]] != 'telepot' and map[i[0]][i[1]] != 'tree':
 					map[i[0]][i[1]] = 'water'
-			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 20, 100)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 
 	elif t == 3:
@@ -199,12 +203,12 @@ def id1_spell(map, P1P, P2P, m_p, tar, t, moved):
 				l += findLinePoints(m_p,[x-1,y],2)
 				l.append([x, y - 1])
 		dmg = 80
-		if l != [] and m_p.cur_MP >= 20:
+		if l != [] and m_p.cur_MP >= MP3:
 			for i in enemy:
 				if [i.x, i.y] in l:
 					print("ulti hit on")
 					i.cur_HP  = MHCal(i.cur_HP, 0, belowZero(dmg - i.cur_def), i.HP)
-			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 20, 100)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
 
@@ -213,16 +217,18 @@ def id2_spell(map, P1P, P2P, m_p, tar, t, moved):
 		enemy = P2P
 	else:
 		enemy = P1P
+
 	tar_on = False
 	for i in enemy:
 		if tar[0] == i.x and tar[1] == i.y:
 			tar_poke = i
 			tar_on = True
 			print("hit on")
+
 	if t == 1:
 		line = checkInLine(m_p, tar)
 		
-		if line and m_p.cur_MP >= 20:
+		if line and m_p.cur_MP >= MP1:
 			if line[2] < 4:
 				dmg = 60
 				# get target points in line using line[1] which 1 distance adjacent to current point
@@ -234,19 +240,120 @@ def id2_spell(map, P1P, P2P, m_p, tar, t, moved):
 					if map[i[0]][i[1]] == 'tree':
 						map[i[0]][i[1]] = '0'
 
-				m_p.cur_MP = MHCal(m_p.cur_MP, 0, 20, 100)
+				m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
 				moved.append(m_p.uid)
 
 	elif t == 2:
-		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= 20 and tar_on:
-			dmg = 40
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2 and tar_on:
+			tar_poke.fire_dmg = 20
+			tar_poke.fire_turn = 3
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if tar in rangeCal(m_p.x, m_p.y, 1) and m_p.cur_MP >= MP3 and tar_on:
+			dmg = 160
 			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
-			m_p.buff_turn = 3
-			m_p.buff_def = 5
-			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 20, 100)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
+def id3_spell(map, P1P, P2P, m_p, tar, t, moved, turn):
+	if m_p.uid < 4:
+		enemy = P2P
+	else:
+		enemy = P1P
 
+	if t == 1:
+		line = checkInLine(m_p, tar)
+
+		
+		if line and m_p.cur_MP >= MP1 and line[2] < 5:
+			dmg = 60
+			l = findLinePoints(m_p, line[1], 4)
+
+			#print(l)
+			
+			fir_e = []
+
+			for i in l:
+				a, b = i[0], i[1]
+				if a >= 0 and a < 20 and b >= 0 and b < 20 and fir_e == []:
+					for e_ in enemy:
+						if a == e_.x and b == e_.y:
+							e_.cur_HP = MHCal(e_.cur_HP, 0, belowZero(dmg - e_.cur_def), e_.HP)
+							fir_e.append(e_)
+
+			print(fir_e)
+			if fir_e != []:
+				if checkSpaceAva(line[1][0], line[1][1], P1P, P2P) and map[line[1][0]][line[1][1]] != 'tree':
+					fir_e[0].x = line[1][0]
+					fir_e[0].y = line[1][1]
+					m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+					moved.append(m_p.uid)
+	elif t == 2:
+		line = checkInLine(m_p, tar)
+		if line and m_p.cur_MP >= MP1 and line[2] < 7:
+			l = findLinePoints(m_p, line[1], 6)
+			for i in l: 
+				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 20 and map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'firer' and map[i[0]][i[1]] != 'telepot' and map[i[0]][i[1]] != 'tree' and map[i[0]][i[1]] != 'tree':
+					if checkSpaceAva(i[0], i[1], P1P, P2P):
+						map[i[0]][i[1]] = 'tree'
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if not m_p.ult:
+			m_p.cur_turn = turn
+			m_p.ult = True
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+def id3_ult(P1P, P2P, m_p, moved):
+	if m_p.uid < 4:
+		enemy = P2P
+	else:
+		enemy = P1P
+
+	m_p.ult = False
+	dmg = 240
+	for i in enemy:
+		if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 2):
+			i.cur_HP = MHCal(i.cur_HP, 0, belowZero(dmg - i.cur_def), i.HP)
+			break
+	moved.append(m_p.uid)
+
+def id4_spell(map, P1P, P2P, m_p, tar, t, moved):
+	if m_p.uid < 4:
+		enemy = P2P
+	else:
+		enemy = P1P
+
+	tar_on = False
+	for i in enemy:
+		if tar[0] == i.x and tar[1] == i.y:
+			tar_poke = i
+			tar_on = True
+			print("hit on")
+
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 1) and m_p.cur_MP >= MP1 and tar_on:
+			dmg = 50
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
+			m_p.buff_turn = 1
+			m_p.buff_att = -10
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if m_p.cur_MP >= MP2:
+			m_p.buff_turn = 5
+			m_p.buff_def = 5
+			m_p.buff_att = 10
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if m_p.cur_MP >= MP3:
+			m_p.cur_HP = m_p.HP
+			m_p.stun = True
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
 
 
 
@@ -266,11 +373,11 @@ def find_next(cur_pos, enemy, n):
 def checkInLine(m_p, tar):
 	d_x, d_y = tar[0] - m_p.x, tar[1] - m_p.y
 	a_x, a_y = abs(d_x), abs(d_y)
-	if d_y == 0:
-		if d_x % 2 == 0 and d_x > 0:
+	if d_y == 0 and d_x % 2 == 0:
+		if d_x > 0:
 			return ['b', [m_p.x + 2, m_p.y], int(d_x / 2)]
-		elif d_x % 2 == 0 and d_x < 0:
-			return ['t', [m_p.x + 2, m_p.y], int(d_x / 2)]
+		elif d_x < 0:
+			return ['t', [m_p.x - 2, m_p.y], int(d_x / 2)]
 	elif m_p.x % 2 == 0:
 		# top left
 		if d_x < 0 and d_y < 0:
@@ -279,7 +386,7 @@ def checkInLine(m_p, tar):
 		# bot left
 		if d_x > 0 and d_y < 0:
 			if int((a_x + 1) / 2) == a_y:
-				return ['bl', [m_p.x + 1, m_p.y + 1], a_x]
+				return ['bl', [m_p.x + 1, m_p.y - 1], a_x]
 		# top right
 		if d_x < 0 and d_y >= 0:
 			if int(a_x / 2) == a_y:
@@ -344,3 +451,12 @@ def belowZero(val):
 		return 0
 	else:
 		return val
+
+def checkSpaceAva(x, y, P1P, P2P):
+	for i in P1P:
+		if x == i.x and y == i.y:
+			return False
+	for i in P2P:
+		if x == i.x and y == i.y:
+			return False
+	return True

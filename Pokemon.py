@@ -19,6 +19,7 @@ class Pokemon():
 		self.buff_turn = 0
 		self.buff_att = 0
 		self.buff_def = 0
+		self.stun = False
 
 		self.setupPokemon(pid)
 		self.cur_HP = self.HP
@@ -62,6 +63,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'grass'
 			self.type2 = 'normal'
+
+			self.ult = False
+			self.cur_turn = 0
 
 		# ka bi shou
 		if pid == 4:

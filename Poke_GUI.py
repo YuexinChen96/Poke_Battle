@@ -255,7 +255,7 @@ class Poke_GUI(QWidget):
 			# get x, y pos
 			x = e.x()
 			y = e.y()
-			
+
 			# Page 1: start button
 			if self.page == 0 and x > 300 and x < 500 and y > 500 and y < 600:
 				self.page = 1
@@ -291,6 +291,7 @@ class Poke_GUI(QWidget):
 				for i in self.P1P:
 					self.p1uid.append(i.uid) # Player 1 Pokemon list - used for later
 
+
 			# Page 3: Map and Algo
 			elif self.page == 2:
 				# check click points
@@ -308,6 +309,9 @@ class Poke_GUI(QWidget):
 							self.target_poke = i
 				# selected poke flag == true then ...
 				else:
+					# already select one pokemon
+					self.stunAndUltCheck()
+
 					# check whether switch to another pokemon / require no buttons pushed
 					another_flag = False
 					#print(self.spell1,self.spell2,self.ulti)
@@ -344,6 +348,13 @@ class Poke_GUI(QWidget):
 								Spell.id1_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 							elif self.target_poke.pid == 2:
 								Spell.id2_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 3:
+								Spell.id3_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved, self.turn)
+							elif self.target_poke.pid == 4:
+								Spell.id4_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+
+
+
 							self.spell1, self.spell2, self.ulti = False, False, False
 															
 
@@ -359,7 +370,7 @@ class Poke_GUI(QWidget):
 						self.spell1, self.spell2, self.ulti = False, False, False
 
 			# check all six pokemons finished
-			if len(self.moved) == 6:
+			if len(self.moved) == len(self.P1P) + len(self.P2P):
 				self.moved = []
 				self.turn = self.turn + 1
 				self.water_extra = []
@@ -368,6 +379,8 @@ class Poke_GUI(QWidget):
 					# check pokemon alive
 				for a in self.P2P:
 					self.endOfRound(a, self.P2P)
+				
+
 
 			for a in self.P1P:
 				if a.cur_HP == 0:
@@ -486,10 +499,7 @@ class Poke_GUI(QWidget):
 		i.cur_MP = Spell.MHCal(i.cur_MP, 1, 4, 100)
 
 		# Buff Cal
-		for i in self.P1P:
-			self.buffCal(i)
-		for i in self.P2P:
-			self.buffCal(i)
+		self.buffCal(i)
 
 
 	def buffCal(self, it):
@@ -511,6 +521,7 @@ class Poke_GUI(QWidget):
 			it.curdef = it.defence
 		# fire buff
 		if it.fire_turn != 0:
+			print("fire dmg")
 			it.cur_HP = Spell.MHCal(it.cur_HP, 0, it.fire_dmg, it.HP)
 			it.fire_turn -= 1
 
@@ -584,6 +595,26 @@ class Poke_GUI(QWidget):
 		y_off = root3 / 2 - root6 / 4
 		area = QRect(x - (root6 - 2) / 4 * l, y + y_off * l, l * root6 / 2, l * root6 / 2)
 		p.drawPixmap(area, pimg)
+
+
+
+	def stunAndUltCheck(self):			
+		for i in self.P1P:
+			# miao wa zhong zi lock spell
+			if i.pid == 3 and i.ult and self.turn == i.cur_turn + 1:
+				Spell.id3_ult(self.P1P, self.P2P, i, self.moved)
+			# ka bi shou
+			if i.pid == 4 and i.stun:
+				self.moved.append(i.uid)
+				i.stun = False
+		for i in self.P2P:
+			if i.pid == 3 and len(self.moved) >= len(self.P1P) and i.ult and self.turn == i.cur_turn + 1:
+				Spell.id3_ult(self.P1P, self.P2P, i, self.moved)
+			if i.pid == 4 and i.stun and len(self.moved) >= len(self.P1P):
+				self.moved.append(i.uid)
+				i.stun = False
+
+
 
 
 def belowZero(val):
