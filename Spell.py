@@ -322,7 +322,7 @@ def id3_ult(P1P, P2P, m_p, moved):
 	moved.append(m_p.uid)
 
 # ka bi shou
-def id4_spell(P1P, P2P, m_p, tar, t, moved):
+def id4_spell(P1P, P2P, m_p, tar, t, moved, turn):
 	if m_p.uid < 4:
 		enemy = P2P
 	else:
@@ -353,7 +353,8 @@ def id4_spell(P1P, P2P, m_p, tar, t, moved):
 	elif t == 3:
 		if m_p.cur_MP >= MP3:
 			m_p.cur_HP = m_p.HP
-			m_p.stun = True
+			m_p.cur_turn = turn
+			m_p.ult = True
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
@@ -558,13 +559,14 @@ def id9_spell(P1P, P2P, m_p, tar, t, moved):
 			for i in ours:
 				if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 2):
 					i.cur_HP  = MHCal(i.cur_HP, 1, 30, i.HP)
+					print("HP up")
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
 			moved.append(m_p.uid)
 	elif t == 2:
 		if m_p.cur_MP >= MP2:
 			for i in ours:
 				if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 2):
-					i.cur_MP  = MHCal(i.cur_MP, 1, 12, i.MP)
+					i.cur_MP  = MHCal(i.cur_MP, 1, 12, 100)
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2 - 12, 100)
 			moved.append(m_p.uid)
 	elif t == 3:
@@ -572,6 +574,7 @@ def id9_spell(P1P, P2P, m_p, tar, t, moved):
 			for i in enemy:
 				if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 3):
 					i.stun = True
+					print("Sleep!")
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 

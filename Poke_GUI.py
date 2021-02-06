@@ -370,7 +370,7 @@ class Poke_GUI(QWidget):
 							elif self.target_poke.pid == 3:
 								Spell.id3_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved, self.turn)
 							elif self.target_poke.pid == 4:
-								Spell.id4_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+								Spell.id4_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved, self.turn)
 							elif self.target_poke.pid == 5:
 								Spell.id5_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 							elif self.target_poke.pid == 6:
@@ -405,12 +405,15 @@ class Poke_GUI(QWidget):
 					self.water_extra = []
 					for a in self.P1P:
 						self.endOfRound(a, self.P1P)
-						# check pokemon alive
+						# check Player 1 stun
+						if a.stun:
+							self.moved.append(a.uid)
+							a.stun = False
 					for a in self.P2P:
 						self.endOfRound(a, self.P2P)
 				
 
-
+				# check pokemon alive
 				for a in self.P1P:
 					if a.cur_HP == 0:
 						self.P1P.remove(a)
@@ -635,14 +638,16 @@ class Poke_GUI(QWidget):
 			# miao wa zhong zi lock spell
 			if i.pid == 3 and i.ult and self.turn == i.cur_turn + 1:
 				Spell.id3_ult(self.P1P, self.P2P, i, self.moved)
-			# ka bi shou
-			if i.stun:
+			elif i.pid == 4 and i.ult and self.turn == i.cur_turn + 1:
 				self.moved.append(i.uid)
-				i.stun = False
+				i.ult = False
 		for i in self.P2P:
 			if i.pid == 3 and len(self.moved) >= len(self.P1P) and i.ult and self.turn == i.cur_turn + 1:
 				Spell.id3_ult(self.P1P, self.P2P, i, self.moved)
-			if i.stun and len(self.moved) >= len(self.P1P):
+			elif i.pid == 4 and len(self.moved) >= len(self.P1P) and i.ult and self.turn == i.cur_turn + 1:
+				self.moved.append(i.uid)
+				i.ult = False
+			elif i.stun and len(self.moved) >= len(self.P1P):
 				self.moved.append(i.uid)
 				i.stun = False
 

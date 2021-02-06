@@ -91,6 +91,9 @@ class Pokemon():
 			self.name2 = '强化'
 			self.name3 = '睡觉'
 
+			self.ult = False
+			self.cur_turn = 0
+
 		# tu tou long
 		if pid == 5:
 			self.attack = 48
@@ -138,7 +141,7 @@ class Pokemon():
 			self.type = 'fly'
 			self.type2 = 'normal'
 			self.name1 = '急速折返'
-			self.name2 = '适应'
+			self.name2 = '羽栖'
 			self.name3 = '神鸟猛击'
 
 		# pang ding
@@ -269,7 +272,7 @@ class Pokemon():
 			self.defence = 20
 			self.HP = 340
 			self.MP = 0
-			self.type = 'star'
+			self.type = 'normal'
 			self.type2 = 'star'
 			self.name1 = '电击'
 			self.name2 = '钢尾'
