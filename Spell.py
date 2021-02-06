@@ -48,7 +48,7 @@ def rangeCal(x, y, n):
 def MHCal(tar, iod, n, full):
 	if iod == 0 and tar > n:
 		return tar - n
-	elif iod == 0 and tar < n:
+	elif iod == 0 and tar <= n:
 		return 0
 	elif iod == 1 and tar + n > full:
 		return full
@@ -433,6 +433,148 @@ def id6_spell(P1P, P2P, m_p, tar, t, moved):
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
+# zheng fu pai pai
+def id7_spell(P1P, P2P, m_p, tar, t, moved):
+	if m_p.uid < 4:
+		enemy = P2P
+		ours = P1P
+	else:
+		enemy = P1P
+		ours = P2P
+
+	tar_on = False
+	for a in enemy:
+		if tar[0] == a.x and tar[1] == a.y:
+			tar_poke = a
+			tar_on = True
+			print("hit on")
+	tar_ours = False
+	for b in ours:
+		if tar[0] == b.x and tar[1] == b.y:
+			tar_poke = b
+			tar_ours = True
+
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP1 and tar_on:
+			dmg = 60
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, dmg, tar_poke.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+		elif tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP1 and tar_ours:
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 1, 40, tar_poke.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+
+	elif t == 2:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and m_p.cur_MP >= MP2 and (tar_on or tar_ours):
+			tar_poke.x = m_p.x
+			tar_poke.y = m_p.y
+			m_p.x = tar[0]
+			m_p.y = tar[1]
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+
+	elif t == 3:
+		if m_p.cur_MP >= MP3:
+			for i in ours:
+				if i.uid in moved:
+					moved.remove(i.uid)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+
+# bi diao
+def id8_spell(map, P1P, P2P, m_p, tar, t, moved):
+	if m_p.uid < 4:
+		enemy = P2P
+		ours = P1P
+	else:
+		enemy = P1P
+		ours = P2P
+
+	tar_on = False
+	for a in enemy:
+		if tar[0] == a.x and tar[1] == a.y:
+			tar_poke = a
+			tar_on = True
+			print("hit on")
+	tar_ours = False
+	for b in ours:
+		if tar[0] == b.x and tar[1] == b.y:
+			tar_poke = b
+			tar_ours = True
+	
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 1) and m_p.cur_MP >= MP1 and tar_on:
+			dmg = 60
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, dmg, tar_poke.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+
+			line = checkInLine(m_p, tar)
+			print(line)
+			l = (findLinePoints(m_p, line[3], 2))[::-1]
+			print(l)
+			for i in l:
+				if checkSpaceAva(i[0], i[1], P1P, P2P) and map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'telepot':
+					m_p.x, m_p.y = i[0], i[1]
+					break
+
+	elif t == 2:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2 and (tar_on or tar_ours):
+			m_p.type2 = tar_poke.typ1
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+
+	elif t == 3:
+		line = checkInLine(m_p, tar)
+		
+		if line and m_p.cur_MP >= MP3 and line[2] < 6:
+			dmg = 80
+			# get target points in line using line[1] which 1 distance adjacent to current point
+			l = findLinePoints(m_p, line[1], 5)
+			for i in enemy:
+				if [i.x, i.y] in l:
+					i.cur_HP  = MHCal(i.cur_HP, 0, belowZero(dmg - i.cur_def), i.HP)
+			for i in l[::-1]:
+				if checkSpaceAva(i[0], i[1], P1P, P2P) and map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'telepot':
+					m_p.x, m_p.y = i[0], i[1]
+					break
+
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+
+# pang ding
+def id9_spell(P1P, P2P, m_p, tar, t, moved):	
+	if m_p.uid < 4:
+		enemy = P2P
+		ours = P1P
+	else:
+		enemy = P1P
+		ours = P2P
+	if t == 1:
+		if m_p.cur_MP >= MP1:
+			for i in ours:
+				if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 2):
+					i.cur_HP  = MHCal(i.cur_HP, 1, 30, i.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if m_p.cur_MP >= MP2:
+			for i in ours:
+				if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 2):
+					i.cur_MP  = MHCal(i.cur_MP, 1, 12, i.MP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2 - 12, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if m_p.cur_MP >= MP3:
+			for i in enemy:
+				if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 3):
+					i.stun = True
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
 
 # cur_pos: [x, y], enemy: P1P
 def find_next(cur_pos, enemy, n):
@@ -448,42 +590,42 @@ def checkInLine(m_p, tar):
 	a_x, a_y = abs(d_x), abs(d_y)
 	if d_y == 0 and d_x % 2 == 0:
 		if d_x > 0:
-			return ['b', [m_p.x + 2, m_p.y], int(d_x / 2)]
+			return ['b', [m_p.x + 2, m_p.y], int(d_x / 2), [m_p.x - 2, m_p.y]]
 		elif d_x < 0:
-			return ['t', [m_p.x - 2, m_p.y], int(d_x / 2)]
+			return ['t', [m_p.x - 2, m_p.y], int(d_x / 2), [m_p.x + 2, m_p.y]]
 	elif m_p.x % 2 == 0:
 		# top left
 		if d_x < 0 and d_y < 0:
 			if int((a_x + 1) / 2) == a_y:
-				return ['tl', [m_p.x - 1, m_p.y - 1], a_x]
+				return ['tl', [m_p.x - 1, m_p.y - 1], a_x, [m_p.x + 1, m_p.y]]
 		# bot left
 		if d_x > 0 and d_y < 0:
 			if int((a_x + 1) / 2) == a_y:
-				return ['bl', [m_p.x + 1, m_p.y - 1], a_x]
+				return ['bl', [m_p.x + 1, m_p.y - 1], a_x, [m_p.x - 1, m_p.y]]
 		# top right
 		if d_x < 0 and d_y >= 0:
 			if int(a_x / 2) == a_y:
-				return ['tr', [m_p.x - 1, m_p.y], a_x]
+				return ['tr', [m_p.x - 1, m_p.y], a_x, [m_p.x + 1, m_p.y - 1]]
 		if d_x > 0 and d_y >= 0:
 			if int(a_x / 2) == a_y:
-				return ['br', [m_p.x + 1, m_p.y], a_x]
+				return ['br', [m_p.x + 1, m_p.y], a_x, [m_p.x - 1, m_p.y - 1]]
 	elif m_p.x % 2 == 1:
 		# top left
 		if d_x < 0 and d_y <= 0:
 			if int(a_x / 2) == a_y:
-				return ['tl', [m_p.x - 1, m_p.y], a_x]
+				return ['tl', [m_p.x - 1, m_p.y], a_x, [m_p.x + 1, m_p.y + 1]]
 		# bot left
 		if d_x > 0 and d_y <= 0:
 			if int(a_x / 2) == a_y:
-				return ['bl', [m_p.x + 1, m_p.y], a_x]
+				return ['bl', [m_p.x + 1, m_p.y], a_x, [m_p.x - 1, m_p.y + 1]]
 		# top right
 		if d_x < 0 and d_y > 0:
 			if int((a_x + 1) / 2) == a_y:
-				return ['tr', [m_p.x - 1, m_p.y + 1], a_x]
+				return ['tr', [m_p.x - 1, m_p.y + 1], a_x, [m_p.x + 1, m_p.y]]
 		# bot right
 		if d_x > 0 and d_y > 0:
 			if int((a_x + 1) / 2) == a_y:
-				return ['br', [m_p.x + 1, m_p.y + 1], a_x]
+				return ['br', [m_p.x + 1, m_p.y + 1], a_x , [m_p.x - 1, m_p.y]]
 	return False
 
 

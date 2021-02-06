@@ -33,6 +33,9 @@ class Poke_GUI(QWidget):
 	# Player 1 and Player 2 Pokemons for logic stored
 	P1P = []
 	P2P = []
+	# Player 1 and Player 2 Pokemons index for drawing used
+	P1P_i = []
+	P2P_i = []
 	# selected pokemon, target_poke: store for current pokemon
 	select_poke = False
 	target_poke = None
@@ -137,7 +140,13 @@ class Poke_GUI(QWidget):
 
 	# draw basic blocks and control buttons
 	def Mapping(self, e, p):
-		
+		# record index for Player 1 and Player 2
+		self.P1P_i = []
+		self.P2P_i = []
+		for i in self.P1P:
+			self.P1P_i.append([i.x, i.y])
+		for i in self.P2P:
+			self.P2P_i.append([i.x, i.y])
 
 		p.setBrush(QColor(255,255,255))
 		# Basic Polygons - Playing area
@@ -148,13 +157,19 @@ class Poke_GUI(QWidget):
 					pic_ = self.map[2 * a + b][c]
 					# drawBlocks 		b = 0 for col 0, 2, 4, 6 ... b = 1 for col 1, 3, 5, 7...
 					if b == 0:
+						# check player's pokemon
+						self.playerPokeColor(p, 2 * a + b, c, self.P1P_i, self.P2P_i)
 						self.drawPolygonByPos(20 + c * 120, a * 40 * root3, 40, p)
 						self.drawPokemon(20 + c * 120, a * 40 * root3, 40, p, 'Pics/' + pic_ + '.jpg')
 					elif b == 1:
+						self.playerPokeColor(p, 2 * a + b, c, self.P1P_i, self.P2P_i)
 						self.drawPolygonByPos(80 + c * 120, 20 * root3 + a * 40 * root3, 40, p)
 						self.drawPokemon(80 + c * 120, 20 * root3 + a * 40 * root3, 40, p, 'Pics/' + pic_ + '.jpg')
+
+
 		# Control buttons ---- bottom
 		p.setFont(QFont("Arial", 16))
+		p.setBrush(QColor(255,255,255))
 		p.drawRect(150, 790, 80, 80)
 		p.drawRect(300, 800, 120, 60)
 		p.drawRect(500, 800, 120, 60)
@@ -167,7 +182,7 @@ class Poke_GUI(QWidget):
 		if self.select_poke:
 			pimg = QPixmap('Pics/pic' + str(self.target_poke.pid) + '.jpg')
 			p.drawPixmap(QRect(150, 790, 80, 80), pimg)
-			p.drawText(340, 840, '保持')
+			p.drawText(305, 840, '保持')
 			if self.spell1:
 				p.setPen(QColor(255,0,0))
 			else:
@@ -360,6 +375,12 @@ class Poke_GUI(QWidget):
 								Spell.id5_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 							elif self.target_poke.pid == 6:
 								Spell.id6_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 7:
+								Spell.id7_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 8:
+								Spell.id8_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 9:
+								Spell.id9_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 
 
 
@@ -615,17 +636,23 @@ class Poke_GUI(QWidget):
 			if i.pid == 3 and i.ult and self.turn == i.cur_turn + 1:
 				Spell.id3_ult(self.P1P, self.P2P, i, self.moved)
 			# ka bi shou
-			if i.pid == 4 and i.stun:
+			if i.stun:
 				self.moved.append(i.uid)
 				i.stun = False
 		for i in self.P2P:
 			if i.pid == 3 and len(self.moved) >= len(self.P1P) and i.ult and self.turn == i.cur_turn + 1:
 				Spell.id3_ult(self.P1P, self.P2P, i, self.moved)
-			if i.pid == 4 and i.stun and len(self.moved) >= len(self.P1P):
+			if i.stun and len(self.moved) >= len(self.P1P):
 				self.moved.append(i.uid)
 				i.stun = False
 
-
+	def playerPokeColor(self, p, x, y, P1i, P2i):
+		if [x, y] in P1i:
+			p.setBrush(QColor(255,242,204))
+		elif [x, y] in P2i:
+			p.setBrush(QColor(217,234,211))
+		else:
+			p.setBrush(QColor(255,255,255))
 
 
 def belowZero(val):

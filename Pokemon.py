@@ -125,9 +125,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'elec'
 			self.type2 = 'normal'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '正负交换'
+			self.name2 = '交接棒'
+			self.name3 = '紧密节奏'
 
 		# bi diao
 		if pid == 8:
@@ -137,9 +137,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'fly'
 			self.type2 = 'normal'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '急速折返'
+			self.name2 = '适应'
+			self.name3 = '神鸟猛击'
 
 		# pang ding
 		if pid == 9:
@@ -149,9 +149,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'fairy'
 			self.type2 = 'normal'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '赞美之声'
+			self.name2 = '悦耳之声'
+			self.name3 = '睡眠之声'
 
 		# gu la duo
 		if pid == 10:
