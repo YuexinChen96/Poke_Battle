@@ -27,6 +27,7 @@ tree = []
 
 # Basic GUI class
 class Poke_GUI(QWidget):
+	Ultimate = False
 	# Player 1 and Player 2 Pokemons' indexes - used for drawing
 	Play1_Pokemons = []
 	Play2_Pokemons = []
@@ -89,7 +90,7 @@ class Poke_GUI(QWidget):
 		p.setFont(QFont("Arial", 40))
 		p.drawText(120, 300, 'Welcome to the Pokemon Battle!')
 		p.drawText(330, 570, 'Start')
-		p.drawText(745, 570, 'Exit')
+		p.drawText(745, 570, 'Ulti')
 		p.setFont(QFont("Arial", 20))
 		p.drawText(400, 400, 'Press the start button to start.')
 
@@ -278,16 +279,31 @@ class Poke_GUI(QWidget):
 			# Page 1: start button
 			if self.page == 0 and x > 300 and x < 500 and y > 500 and y < 600:
 				self.page = 1
+			elif self.page == 0 and x > 700 and x < 900 and y > 500 and y < 600:
+				self.page = 1
+				self.Ultimate = True
 
 			# Page 2: select Pokemons
 			# boardary 40, 1120 + 50, 200, ----------------------------------------------need change if more pokemons
 			if self.page == 1 and x > 40 and x < 1170 and y > 200 and y < 300 + 50 * root3:
-				# click on pokemons
 				i_x, i_y = int((x - 40) / 120), int((y - 200) / 100)
-				if len(self.Play1_Pokemons) < 3 and [i_x, i_y] not in self.Play1_Pokemons:
-					self.Play1_Pokemons.append([i_x, i_y]) #---------------------------------need more logical
-				elif len(self.Play1_Pokemons) == 3 and [i_x, i_y] not in self.Play2_Pokemons and len(self.Play2_Pokemons) < 3:
-					self.Play2_Pokemons.append([i_x, i_y])
+				# Ultimate Mode
+				if self.Ultimate:
+				# click on pokemons
+					if len(self.Play1_Pokemons) < 3 and [i_x, i_y] not in self.Play1_Pokemons:
+						self.Play1_Pokemons.append([i_x, i_y]) #---------------------------------need more logical
+					elif len(self.Play1_Pokemons) == 3 and [i_x, i_y] not in self.Play2_Pokemons and len(self.Play2_Pokemons) < 3:
+						self.Play2_Pokemons.append([i_x, i_y])
+				# Normal Mode
+				else:
+					if len(self.Play1_Pokemons) < 2 and [i_x, i_y] not in self.Play1_Pokemons and i_y == 0:
+						self.Play1_Pokemons.append([i_x, i_y])
+					elif len(self.Play1_Pokemons) == 2 and [i_x, i_y] not in self.Play1_Pokemons and i_y == 1:
+						self.Play1_Pokemons.append([i_x, i_y])
+					elif len(self.Play1_Pokemons) == 3 and [i_x, i_y] not in self.Play2_Pokemons and len(self.Play2_Pokemons) < 2 and i_y == 0:
+						self.Play2_Pokemons.append([i_x, i_y])
+					elif len(self.Play1_Pokemons) == 3 and [i_x, i_y] not in self.Play2_Pokemons and len(self.Play2_Pokemons) == 2 and i_y == 1:
+						self.Play2_Pokemons.append([i_x, i_y])
 			# click on Pokemon remove it - Player 1
 			elif self.page == 1 and x > 40 and x < 330 and y > 700 and y < 700 + 50 * root3:
 				i_x = int((x - 40) / 120)
