@@ -23,6 +23,7 @@ s_void = [[0,0],[1,0],[2,0],[19,9],[18,9],[17,9],[3,0],[4,1],[3,1],[2,1],[16,9],
 
 tree = []
 
+ocean_center = [-1,-1]
 
 
 # Basic GUI class
@@ -49,6 +50,8 @@ class Poke_GUI(QWidget):
 	p1uid = []
 	# Store for extra movement for type water
 	water_extra = []
+	# thunder positions
+	thunder = []
 
 	def __init__(self):
 		super().__init__()
@@ -57,11 +60,13 @@ class Poke_GUI(QWidget):
 		self.initUI()
 		self.page = 0
 		self.map = [['0' for x in range(10)] for y in range(20)]
+		
 
 		# game related
 		self.turn = 0
 		# 2-D arrays used for store logical board
 		self.init_logical_Graph()
+
 		
 
 
@@ -237,6 +242,7 @@ class Poke_GUI(QWidget):
 			p.setBrush(QColor(255, 0, 0))
 			p.drawRect(1240, 80 + n * i, 200 * pkmn.cur_HP / pkmn.HP, 5)
 			p.setBrush(QColor(0, 0, 255))
+			print(pkmn.pid, pkmn.cur_MP)
 			p.drawRect(1240, 100 + n * i, 200 * pkmn.cur_MP / 100, 5)
 			# draw whether this pokemon has finished its turn
 			if pkmn.uid in self.moved:
@@ -397,8 +403,22 @@ class Poke_GUI(QWidget):
 								Spell.id8_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 							elif self.target_poke.pid == 9:
 								Spell.id9_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
-
-
+							elif self.target_poke.pid == 10:
+								Spell.id10_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 11:
+								Spell.id11_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 12:
+								Spell.id12_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 13:
+								Spell.id13_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 14:
+								Spell.id14_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved, self.thunder)
+							elif self.target_poke.pid == 15:
+								Spell.id15_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 16:
+								Spell.id16_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 17:
+								Spell.id17_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 							elif self.target_poke.pid == 18:
 								Spell.id18_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 							elif self.target_poke.pid == 19:
@@ -445,16 +465,29 @@ class Poke_GUI(QWidget):
 					if star_check and self.turn % 7 == 0:
 						self.star_effect(a.x, a.y)
 
+					# thunder count down
+					if self.thunder != []:
+						if self.thunder[0][1] != 0:
+							self.thunder[0][1] -= 1
+
 					self.turn = self.turn + 1
 
 				# check pokemon alive
 				for a in self.P1P:
 					if a.cur_HP <= 0:
-						self.P1P.remove(a)
-						self.p1uid.remove(a.uid)
+						if a.pid == 17 and a.ult and a.once:
+							a.cur_HP = a.HP
+							a.ult = False
+						else:
+							self.P1P.remove(a)
+							self.p1uid.remove(a.uid)
 				for a in self.P2P:
 					if a.cur_HP <= 0:
-						self.P2P.remove(a)
+						if a.pid == 17 and a.ult and a.once:
+							a.cur_HP = a.HP
+							a.ult = False
+						else:
+							self.P2P.remove(a)
 
 
 
@@ -464,7 +497,8 @@ class Poke_GUI(QWidget):
 
 	# execute the movement
 	def movePokemon(self, x, y):
-		if (self.target_poke.type == 'water' or self.target_poke.type2 == 'water') and self.target_poke.uid not in self.water_extra and self.turn % 2 == 0 and (self.map[self.target_poke.x][self.target_poke.y] == 'water' or self.map[x][y] == 'water'):
+		if (self.target_poke.type == 'water' or self.target_poke.type2 == 'water') and self.target_poke.uid not in self.water_extra and self.turn % 2 == 0 and \
+		(self.map[self.target_poke.x][self.target_poke.y] == 'water' or self.map[x][y] == 'water' or self.map[self.target_poke.x][self.target_poke.y] == 'ocean' or self.map[x][y] == 'ocean'):
 			self.target_poke.x = x
 			self.target_poke.y = y
 			self.water_extra.append(self.target_poke.uid)
@@ -532,8 +566,11 @@ class Poke_GUI(QWidget):
 	def endOfRound(self, i, dra):
 		spring_range = [[1, 4], [1, 5], [2, 5], [17, 4], [18, 4], [18, 5]]
 		# fire dmg
-		if [i.x, i.y] in firer and i.type != 'fire' and i.type2 != 'fire':
-			i.cur_HP = Spell.MHCal(i.cur_HP, 0, 30, i.HP) 
+		if self.map[i.x][i.y] == 'firer' and i.type != 'fire' and i.type2 != 'fire':
+			i.cur_HP = Spell.MHCal(i.cur_HP, 0, 30, i.HP)
+		# ocean dmg
+		if self.map[i.x][i.y] == 'ocean' and i.type != 'water' and i.type2 != 'water':
+			i.cur_HP = Spell.MHCal(i.cur_HP, 0, 30, i.HP)
 		# spring effect
 		if [i.x, i.y] in spring_range:
 			i.cur_HP = Spell.MHCal(i.cur_HP, 1, 20, i.HP)
@@ -564,8 +601,25 @@ class Poke_GUI(QWidget):
 		# final MP recover
 		i.cur_MP = Spell.MHCal(i.cur_MP, 1, 4, 100)
 
+		# thunder effect
+		if [i.x, i.y] in self.thunder and i.pid != 14:
+			i.cur_HP = Spell.MHCal(i.cur_HP, 0, 30, i.cur_HP)
+			i.cur_MP = Spell.MHCal(i.cur_MP, 0, 12, 100)
+
 		# Buff Cal
 		self.buffCal(i)
+
+		# force movement
+		# ocean effect
+		if ocean_center != [-1, -1] and self.map[i.x][i.y] == 'ocean' and i.pid != 11:
+			if i.x <= ocean_center[0]:
+				if Spell.checkSpaceAva(self.map,i.x+1,i.y,self.P1P,self.P2P):
+					i.x += 1
+			else:
+				if Spell.checkSpaceAva(self.map,i.x-1,i.y,self.P1P,self.P2P):
+					i.x -= 1
+
+
 
 
 	def buffCal(self, it):
@@ -580,11 +634,13 @@ class Poke_GUI(QWidget):
 				it.cur_def = belowZero(it.defence + it.buff_def)
 			it.buff_turn -= 1
 		else:
+			it.buff_att = 0
+			it.buff_def = 0
 			if it.type == 'dragon' or it.type2 == 'dragon':
 				it.cur_att = it.dra_att
 			else:
 				it.cur_att = it.attack
-			it.curdef = it.defence
+			it.cur_def = it.defence
 		# fire buff
 		if it.fire_turn != 0:
 			print("fire dmg")
@@ -696,10 +752,22 @@ class Poke_GUI(QWidget):
 				i.stun = False
 
 	def playerPokeColor(self, p, x, y, P1i, P2i):
+		thunder_ = []
+		# thunder drawing
+		if self.thunder != []:
+			if self.thunder[0][1] != 0:
+				thunder_ = self.thunder[1:]
+			else:
+				self.thunder = []
+
+
+
 		if [x, y] in P1i:
 			p.setBrush(QColor(255,242,204))
 		elif [x, y] in P2i:
 			p.setBrush(QColor(217,234,211))
+		elif [x, y] in thunder_:
+			p.setBrush(QColor(207,255,51))
 		else:
 			p.setBrush(QColor(255,255,255))
 

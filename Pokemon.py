@@ -8,7 +8,7 @@ class Pokemon():
 		self.x = x
 		self.y = y
 		self.pid = pid
-		self.cur_MP = 80
+		self.cur_MP = 100
 		self.uid = uid
 		self.fire_mark = False
 		self.poison_mark = 1
@@ -193,6 +193,7 @@ class Pokemon():
 			self.name2 = '帝王之怒'
 			self.name3 = '龙星群'
 
+			self.spell_extra = 0
 		# luo qi ya
 		if pid == 13:
 			self.attack = 59
@@ -253,6 +254,9 @@ class Pokemon():
 			self.name1 = '焚烧殆尽'
 			self.name2 = '五彩斑斓'
 			self.name3 = '浴血重生'
+
+			self.ult = False
+			self.once = False
 
 		# xue la bi
 		if pid == 18:

@@ -36,7 +36,7 @@ def rangeCal(x, y, n):
 			l = l + [[x-3,y-2],[x-1,y-2],[x+1,y-2],[x+3,y-2]]
 		if x % 2 == 1:
 			for i in range(x - 4, x + 5):
-				l.append([i,y-2])
+				l.append([i,y-1])
 			for i in range(x - 5, x + 6):
 				l.append([i,y+1])
 			l = l + [[x-3,y+2],[x-1,y+2],[x+1,y+2],[x+3,y+2]]
@@ -120,7 +120,7 @@ def id0_spell(P1P, P2P, m_p, tar, t, moved):
 			dmg = 40
 			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
 			m_p.buff_turn = 3
-			m_p.buff_def = 5
+			m_p.buff_def += 5
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 
@@ -165,7 +165,8 @@ def id1_spell(map, P1P, P2P, m_p, tar, t, moved):
 			if x % 2 == 1:
 				l = [[x - 1, y],[x - 2, y],[x + 1, y],[x + 2,y],[x - 1,y + 1],[x + 1,y + 1],[x, y]]
 			for i in l:
-				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 20 and map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'water' and map[i[0]][i[1]] != 'telepot' and map[i[0]][i[1]] != 'tree':
+				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 20 and map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'fire'\
+				 and map[i[0]][i[1]] != 'telepot' and map[i[0]][i[1]] != 'tree':
 					map[i[0]][i[1]] = 'water'
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
@@ -266,9 +267,13 @@ def id2_spell(map, P1P, P2P, m_p, tar, t, moved):
 				moved.append(m_p.uid)
 
 	elif t == 2:
-		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2 and tar_on:
-			tar_poke.fire_dmg = 20
-			tar_poke.fire_turn = 3
+		if m_p.cur_MP >= MP2:
+			l = rangeCal(m_p.x, m_p.y, 1) + [[m_p.x,m_p.y]]
+			for i in l:
+				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 10:
+					if map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'water' and map[i[0]][i[1]] != 'telepot'\
+					 and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'ocean':
+						map[i[0]][i[1]] = 'firer'
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 	elif t == 3:
@@ -307,7 +312,7 @@ def id3_spell(map, P1P, P2P, m_p, tar, t, moved, turn):
 
 			print(fir_e)
 			if fir_e != []:
-				if checkSpaceAva(line[1][0], line[1][1], P1P, P2P) and map[line[1][0]][line[1][1]] != 'tree':
+				if checkSpaceAva(map,line[1][0], line[1][1], P1P, P2P) and map[line[1][0]][line[1][1]] != 'tree':
 					fir_e[0].x = line[1][0]
 					fir_e[0].y = line[1][1]
 					m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
@@ -362,14 +367,14 @@ def id4_spell(P1P, P2P, m_p, tar, t, moved, turn):
 			dmg = 50
 			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
 			m_p.buff_turn = 1
-			m_p.buff_att = -10
+			m_p.buff_att -= 10
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
 			moved.append(m_p.uid)
 	elif t == 2:
 		if m_p.cur_MP >= MP2:
 			m_p.buff_turn = 5
-			m_p.buff_def = 5
-			m_p.buff_att = 10
+			m_p.buff_def += 5
+			m_p.buff_att += 10
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 	elif t == 3:
@@ -404,7 +409,7 @@ def id5_spell(P1P, P2P, m_p, tar, t, moved):
 		for i in enemy:
 			if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 2):
 				i.buff_turn = 1
-				i.buff_def = -10
+				i.buff_def -= 10
 		m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 		moved.append(m_p.uid)
 	elif t == 3:
@@ -528,7 +533,7 @@ def id8_spell(map, P1P, P2P, m_p, tar, t, moved):
 
 	elif t == 2:
 		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2 and (tar_on or tar_ours):
-			m_p.type2 = tar_poke.typ1
+			m_p.type2 = tar_poke.type
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 
@@ -583,6 +588,263 @@ def id9_spell(P1P, P2P, m_p, tar, t, moved):
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
+# gu la duo
+def id10_spell(map, P1P, P2P, m_p, tar, t, moved):
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP > MP1 and tar_on:
+			if map[m_p.x][m_p.y] == 'firer':
+				dmg = 100
+			else:
+				dmg = 70
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if m_p.cur_MP > MP2:
+			l = rangeCal(m_p.x, m_p.y, 2) + [[m_p.x, m_p.y]]
+			for i in l:
+				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 10 and map[i[0]][i[1]] != 'spring' and\
+				 map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'telepot':
+					map[i[0]][i[1]] = 'firer'
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		dmg = 140
+		if m_p.cur_MP > MP3:
+			l = rangeCal(m_p.x, m_p.y, 2)
+			print(l)
+			for i in enemy:
+				if [i.x, i.y] in l:
+					i.cur_HP = MHCal(i.cur_HP, 0, belowZero(dmg - i.cur_def), i.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+
+
+
+# hai huang ya
+def id11_spell(map, P1P, P2P, m_p, tar, t, moved):
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP > MP1 and tar_on:
+			if map[m_p.x][m_p.y] == 'water' or map[m_p.x][m_p.y] == 'ocean':
+				dmg = 100
+			else:
+				dmg = 70
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if m_p.cur_MP > MP2:
+			for a in range(m_p.x - 2,m_p.x + 3):
+				for b in range(m_p.y - 2,m_p.y + 2):
+					if a >= 0 and a < 20 and b >= 0 and b < 10 and map[a][b] != 'srping' and map[a][b] != 'fire' and map[a][b] != 'telepot':
+						map[a][b] = 'water'
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		dmg = 60
+		if m_p.cur_MP > MP3:
+			l = []
+			for i in rangeCal(m_p.x, m_p.y, 3):
+				if i not in rangeCal(m_p.x, m_p.y, 1):
+					l.append(i)
+			Poke_GUI.ocean_center = [m_p.x, m_p.y]
+			for i in l:
+				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 10 and map[i[0]][i[1]] != 'spring' \
+				and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'telepot':
+					map[i[0]][i[1]] = 'ocean'
+			for i in enemy:
+				if map[i.x][i.y] == 'ocean':
+					i.cur_HP = MHCal(i.cur_HP, 0, belowZero(dmg - i.cur_def), i.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+# tian kong long
+def id12_spell(P1P, P2P, m_p, tar, t, moved):
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
+	print(m_p.spell_extra)
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP > MP1 and tar_on:
+			if m_p.spell_extra == 0:
+				tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(70), tar_poke.HP)
+			else:
+				tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(70 + m_p.spell_extra), tar_poke.HP)
+				mp.spell_extra = 0
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if m_p.cur_MP > MP2:
+			m_p.spell_extra += 25
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if m_p.cur_MP > MP3:
+			if m_p.spell_extra == 0:
+				dmg = 140
+			else:
+				dmg = 140 + m_p.spell_extra
+				m_p.spell_extra = 0
+			for i in enemy:
+				if m_p.spell_extra == 0:
+					i.cur_HP = MHCal(i.cur_HP, 0, belowZero(dmg - i.cur_def), i.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+
+# luo qi ya
+def id13_spell(P1P, P2P, m_p, tar, t, moved):
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP > MP1 and tar_on:
+			dmg = 80
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
+			for i in ours:
+				if i.type == 'water' or i.type2 == 'water':
+					i.buff_turn = 2
+					i.buff_att += 10
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if m_p.cur_MP > MP2:
+			m_p.cur_HP = MHCal(m_p.cur_HP, 1, 195, m_p.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP > MP3 and tar_on:
+			dmg = 130
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
+			tar_poke.buff_turn = 2
+			tar_poke.buff_def = 0 - tar_poke.cur_def
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+# lei gong
+def id14_spell(map, P1P, P2P, m_p, tar, t, moved, thunder):
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and m_p.cur_MP >= MP1 and tar_on:
+			dmg = 65
+			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
+			tar_poke.stun = True
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and m_p.cur_MP >= MP2 and tar_on:
+			l = rangeCal(tar[0], tar[1], 1) + [[tar[0], tar[1]]]
+			for i in enemy:
+				if [i.x, i.y] in l:
+					i.stun = True
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if m_p.cur_MP >= MP3:
+			l = []
+			for i in rangeCal(m_p.x, m_p.y, 3):
+				if i not in rangeCal(m_p.x, m_p.y, 2):
+					l.append(i)
+			thunder.append([0,6])
+			for i in l:
+				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 10 and map[i[0]][i[1]] != 'spring'\
+				 and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'telepot' :
+					thunder.append(i)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+
+# kuai long
+def id15_spell(P1P, P2P, m_p, tar, t, moved):
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP1 and tar_on:
+			l = rangeCal(tar[0], tar[1], 1) + [tar]
+			for i in enemy:
+				if [i.x, i.y] in l:
+					i.cur_HP = MHCal(i.cur_HP, 0, 60, i.HP)
+			m_p.cur_HP = MHCal(m_p.cur_HP, 0, 50, m_p.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2 and (tar_on or tar_ours):
+			if tar_on:
+				tar_poke.buff_turn = 2
+				tar_poke.buff_def -= 10
+			if tar_ours:
+				tar_poke.buff_turn = 2
+				tar_poke.buff_att += 20
+			m_p.buff_turn = 2
+			m_p.buff_def -= 10
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if m_p.cur_MP >= MP3:
+			l = rangeCal(m_p.x, m_p.y, 2)
+			for i in ours:
+				if [i.x, i.y] in l:
+					i.buff_turn = 2
+					i.buff_att += 30
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+
+# cao ci wei
+def id16_spell(P1P, P2P, m_p, tar, t, moved):
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
+	if t == 1:
+		if m_p.cur_MP >= MP1:
+			l = rangeCal(m_p.x, m_p.y, 2) + [[m_p.x, m_p.y]]
+			for i in ours:
+				if [i.x, i.y] in l:
+					i.cur_HP = MHCal(i.cur_HP, 1, int(i.HP * 0.15), i.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if m_p.cur_MP >= MP2:
+			l = rangeCal(m_p.x, m_p.y, 2) + [[m_p.x, m_p.y]]
+			for i in ours:
+				if [i.x, i.y] in l:
+					i.buff_turn = 5
+					i.buff_att += 6
+					i.buff_def += 12
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if m_p.cur_MP >= MP3:
+			l = rangeCal(m_p.x, m_p.y, 2) + [[m_p.x, m_p.y]]
+			for i in ours:
+				if [i.x, i.y] in l:
+					i.cur_HP = MHCal(i.cur_HP, 1, int(i.HP * 0.6), i.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+# feng huang
+def id17_spell(P1P, P2P, m_p, tar, t, moved):
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
+	if t == 1:
+		if m_p.cur_MP >= MP1:
+			l = rangeCal(m_p.x, m_p.y, 2)
+			for i in enemy + ours:
+				if [i.x, i.y] in l and i != m_p:
+					i.cur_HP = MHCal(i.cur_HP, 0, belowZero(80 - i.cur_def), i.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if m_p.cur_MP >= MP2:
+			m_p.buff_turn = 5
+			m_p.buff_att += 5
+			m_p.buff_def += 5
+			m_p.HP += 50
+			m_p.cur_HP = MHCal(m_p.cur_HP, 1, 50, m_p.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if m_p.cur_MP >= MP3:
+			if not m_p.once: 
+				m_p.ult = True
+				m_p.once = True
+				m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+				moved.append(m_p.uid)
 
 # xue la bi
 def id18_spell(map, P1P, P2P, m_p, tar, t, moved):
@@ -680,7 +942,7 @@ def id19_spell(P1P, P2P, m_p, tar, t, moved):
 		if m_p.cur_MP >= MP3:
 			for i in ours:
 				i.buff_turn = 3
-				i.buff_def = 1000000
+				i.buff_def += 1000000
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
