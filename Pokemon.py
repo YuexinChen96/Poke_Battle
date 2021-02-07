@@ -178,7 +178,7 @@ class Pokemon():
 			self.type2 = 'normal'
 			self.name1 = '热水'
 			self.name2 = '海潮领域'
-			self.name3 = '水之牢笼'
+			self.name3 = '海之牢笼'
 
 		# tian kong long
 		if pid == 12:

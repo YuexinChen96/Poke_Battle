@@ -921,7 +921,7 @@ def id19_spell(P1P, P2P, m_p, tar, t, moved):
 					i.cur_HP = MHCal(i.cur_HP, 1, 50, i.HP)
 			elif d == 1:
 				for i in enemy:
-					i.cur_HP = MHCal(i.cur_HP, 0, belowZero(40 - i.cur_def), i.HP)
+					i.cur_HP = MHCal(i.cur_HP, 0, belowZero(50 - i.cur_def), i.HP)
 			elif d == 2:
 				for i in ours:
 					i.cur_MP = MHCal(i.cur_MP, 1, 16, 100)
@@ -929,7 +929,7 @@ def id19_spell(P1P, P2P, m_p, tar, t, moved):
 				for i in enemy:
 					i.cur_MP = MHCal(i.cur_MP, 1, 16, 100)
 	if t == 2:
-		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2 and tar_on:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and m_p.cur_MP >= MP2 and tar_on:
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 			d = int(random.random() * 10)

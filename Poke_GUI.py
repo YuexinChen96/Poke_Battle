@@ -581,7 +581,7 @@ class Poke_GUI(QWidget):
 			i.x, i.y = [0, 9]
 		# grass effect
 		if i.type == 'grass' or i.type2 == 'grass':
-			r = int(random.random() * 4) + 2
+			r = int(random.random() * 5) + 2
 			i.cur_HP = Spell.MHCal(i.cur_HP, 1, r, i.HP)
 		# fairy recover
 		if i.type == 'fairy' or i.type2 == 'fairy':
@@ -665,7 +665,7 @@ class Poke_GUI(QWidget):
 			if Spell.checkSpaceAva(self.map, i[0], i[1], self.P1P, self.P2P):
 				if self.map[i[0]][i[1]] == 'firer':
 					self.map[i[0]][i[1]] = 'water'
-				elif self.map[i[0]][i[1]] == 'water':
+				elif self.map[i[0]][i[1]] == 'water' or self.map[i[0]][i[1]] == 'ocean':
 					self.map[i[0]][i[1]] = 'tree'
 				elif self.map[i[0]][i[1]] == 'tree':
 					self.map[i[0]][i[1]] = 'firer'
