@@ -1,4 +1,4 @@
-import copy
+import copy, random
 import Poke_GUI
 
 MP1 = 20
@@ -40,6 +40,28 @@ def rangeCal(x, y, n):
 			for i in range(x - 5, x + 6):
 				l.append([i,y+1])
 			l = l + [[x-3,y+2],[x-1,y+2],[x+1,y+2],[x+3,y+2]]
+		return l
+		
+	if n == 4:
+		l = []
+		for i in range(x - 8, x + 9):
+			l.append([i, y]) 
+		if x % 2 == 0:
+			for i in range(x - 6, x + 7):
+				l.append([i, y + 1])
+			for i in range(x - 7, x + 8):
+				l.append([i, y - 1])
+			for i in range(x - 5, x + 6):
+				l.append([i, y - 2])
+			l = l + [[x-4,y+2],[x-2,y+2],[x,y+2],[x+2,y+2],[x+4,y+2]]
+		if x % 2 == 1:
+			for i in range(x - 7, x + 8):
+				l.append([i,y+1])
+			for i in range(x - 5, x + 6):
+				l.append([i,y+2])
+			for i in range(x - 6, x + 7):
+				l.append([i,y-1])
+			l = l + [[x-4,y-2],[x-2,y-2],[x,y-2],[x+2,y-2],[x+4,y-2]]
 		return l
 
 
@@ -191,7 +213,7 @@ def id1_spell(map, P1P, P2P, m_p, tar, t, moved):
 				l += findLinePoints(m_p,[x+1,y+1],2)
 				l.append([x, y + 1])
 			elif tar == [x + 3, y + 1]:
-				l += findLinePoints(m_p,[x+2,y+1],2)
+				l += findLinePoints(m_p,[x+1,y+1],2)
 				l += findLinePoints(m_p,[x+2,y],2)
 				l.append([x + 3, y + 1])
 			elif tar == [x + 3, y]:
@@ -295,8 +317,8 @@ def id3_spell(map, P1P, P2P, m_p, tar, t, moved, turn):
 		if line and m_p.cur_MP >= MP1 and line[2] < 7:
 			l = findLinePoints(m_p, line[1], 6)
 			for i in l: 
-				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 20 and map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'firer' and map[i[0]][i[1]] != 'telepot' and map[i[0]][i[1]] != 'tree' and map[i[0]][i[1]] != 'tree':
-					if checkSpaceAva(i[0], i[1], P1P, P2P):
+				if map[i[0]][i[1]] != 'firer' and map[i[0]][i[1]] != 'tree':
+					if checkSpaceAva(map, i[0], i[1], P1P, P2P):
 						map[i[0]][i[1]] = 'tree'
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
@@ -436,24 +458,7 @@ def id6_spell(P1P, P2P, m_p, tar, t, moved):
 
 # zheng fu pai pai
 def id7_spell(P1P, P2P, m_p, tar, t, moved):
-	if m_p.uid < 4:
-		enemy = P2P
-		ours = P1P
-	else:
-		enemy = P1P
-		ours = P2P
-
-	tar_on = False
-	for a in enemy:
-		if tar[0] == a.x and tar[1] == a.y:
-			tar_poke = a
-			tar_on = True
-			print("hit on")
-	tar_ours = False
-	for b in ours:
-		if tar[0] == b.x and tar[1] == b.y:
-			tar_poke = b
-			tar_ours = True
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
 
 	if t == 1:
 		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP1 and tar_on:
@@ -517,7 +522,7 @@ def id8_spell(map, P1P, P2P, m_p, tar, t, moved):
 			l = (findLinePoints(m_p, line[3], 2))[::-1]
 			print(l)
 			for i in l:
-				if checkSpaceAva(i[0], i[1], P1P, P2P) and map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'telepot':
+				if checkSpaceAva(map, i[0], i[1], P1P, P2P):
 					m_p.x, m_p.y = i[0], i[1]
 					break
 
@@ -538,7 +543,7 @@ def id8_spell(map, P1P, P2P, m_p, tar, t, moved):
 				if [i.x, i.y] in l:
 					i.cur_HP  = MHCal(i.cur_HP, 0, belowZero(dmg - i.cur_def), i.HP)
 			for i in l[::-1]:
-				if checkSpaceAva(i[0], i[1], P1P, P2P) and map[i[0]][i[1]] != 'spring' and map[i[0]][i[1]] != 'fire' and map[i[0]][i[1]] != 'telepot':
+				if checkSpaceAva(map, i[0], i[1], P1P, P2P):
 					m_p.x, m_p.y = i[0], i[1]
 					break
 
@@ -578,6 +583,130 @@ def id9_spell(P1P, P2P, m_p, tar, t, moved):
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
+
+# xue la bi
+def id18_spell(map, P1P, P2P, m_p, tar, t, moved):
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
+	if t == 1:
+		if tar in rangeCal(m_p.x, m_p.y, 4) and m_p.cur_MP >= 12 and checkSpaceAva(map, tar[0], tar[1], P1P, P2P):
+			l = rangeCal(m_p.x, m_p.y, 1) + rangeCal(tar[0], tar[1], 1) + [[m_p.x, m_p.y]] + [tar]
+			for i in enemy:
+				if [i.x, i.y] in l:
+					i.cur_HP = MHCal(i.cur_HP, 0, belowZero(60 - i.cur_def), i.HP)
+			m_p.x, m_p.y = tar[0], tar[1]
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 12, 100)
+			moved.append(m_p.uid)
+	elif t == 2:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and m_p.cur_MP >= 12:
+			l = countTree(map, tar[0], tar[1])
+			# check how many trees
+			if len(l) <= 4:
+				for i in l:
+					if checkSpaceAva(map, i[0], i[1], P1P, P2P) and map[i[0]][i[1]] != 'firer':
+						map[i[0]][i[1]] = 'tree'
+			# more than 4 space
+			else:
+				while(len(l) > 4):
+					r = int(random.random() * len(l))
+					del l[r]
+				for i in l:
+					if checkSpaceAva(map, i[0], i[1], P1P, P2P)  and map[i[0]][i[1]] != 'firer':
+						map[i[0]][i[1]] = 'tree'
+
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 12, 100)
+			moved.append(m_p.uid)
+	elif t == 3:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and m_p.cur_MP >= 80 and tar_on:
+			l = rangeCal(tar[0], tar[1], 1)
+			death = True
+			for i in l:
+				print(map[i[0]][i[1]], i[0], i[1])
+				if map[i[0]][i[1]] != 'tree':
+					death = False
+			if death:
+				print("Death")
+				tar_poke.cur_HP = 0
+			else:
+				tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(100 - tar_poke.cur_def), tar_poke.HP)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 80, 100)
+			moved.append(m_p.uid)
+
+
+
+
+
+
+# xue la bi helper function
+def countTree(map, x, y):
+	l = rangeCal(x, y, 1)
+	for i in l:
+		if map[i[0]][i[1]] == 'tree' or i[0] < 0 or i[0] > 19 or i[1] < 0 or i[1] > 9:
+			l.remove(i)
+	return l
+
+
+# ji la qi
+def id19_spell(P1P, P2P, m_p, tar, t, moved):
+	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
+	if t == 1:
+		if m_p.cur_MP >= MP1:
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
+			moved.append(m_p.uid)
+			d = int(random.random() * 4)
+			print('Type ' + str(d) + '  effect...')
+			if d == 0:
+				for i in ours:
+					i.cur_HP = MHCal(i.cur_HP, 1, 50, i.HP)
+			elif d == 1:
+				for i in enemy:
+					i.cur_HP = MHCal(i.cur_HP, 0, belowZero(40 - i.cur_def), i.HP)
+			elif d == 2:
+				for i in ours:
+					i.cur_MP = MHCal(i.cur_MP, 1, 16, 100)
+			elif d == 3:
+				for i in enemy:
+					i.cur_MP = MHCal(i.cur_MP, 1, 16, 100)
+	if t == 2:
+		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2 and tar_on:
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
+			moved.append(m_p.uid)
+			d = int(random.random() * 10)
+			if d > 6:
+				print("Congratulation")
+				tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(140 - tar_poke.cur_def), tar_poke.HP)
+			else:
+				tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(70 - tar_poke.cur_def), tar_poke.HP)
+	if t == 3:
+		if m_p.cur_MP >= MP3:
+			for i in ours:
+				i.buff_turn = 3
+				i.buff_def = 1000000
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
+			moved.append(m_p.uid)
+
+
+
+def targetSetup(m_p, P1P, P2P, tar):
+	tar_poke = None
+	if m_p.uid < 4:
+		enemy = P2P
+		ours = P1P
+	else:
+		enemy = P1P
+		ours = P2P
+
+	tar_on = False
+	for a in enemy:
+		if tar[0] == a.x and tar[1] == a.y:
+			tar_poke = a
+			tar_on = True
+			print("hit on")
+	tar_ours = False
+	for b in ours:
+		if tar[0] == b.x and tar[1] == b.y:
+			tar_poke = b
+			tar_ours = True
+	return enemy, ours, tar_on, tar_ours, tar_poke
 
 # cur_pos: [x, y], enemy: P1P
 def find_next(cur_pos, enemy, n):
@@ -670,11 +799,14 @@ def belowZero(val):
 	else:
 		return val
 
-def checkSpaceAva(x, y, P1P, P2P):
+def checkSpaceAva(map, x, y, P1P, P2P):
 	for i in P1P:
 		if x == i.x and y == i.y:
 			return False
 	for i in P2P:
-		if x == i.x and y == i.y:
+		if x == i.x and y == i.y: 
 			return False
-	return True
+	if map[x][y] == 'fire' or map[x][y] == 'spring' or map[x][y] == 'telepot' or x < 0 or x > 19 or y < 0 or y > 9:
+		return False
+	else:
+		return True

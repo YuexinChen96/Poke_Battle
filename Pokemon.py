@@ -8,7 +8,7 @@ class Pokemon():
 		self.x = x
 		self.y = y
 		self.pid = pid
-		self.cur_MP = 100
+		self.cur_MP = 80
 		self.uid = uid
 		self.fire_mark = False
 		self.poison_mark = 1
@@ -81,7 +81,7 @@ class Pokemon():
 
 		# ka bi shou
 		if pid == 4:
-			self.attack = 30
+			self.attack = 35
 			self.defence = 23
 			self.HP = 340
 			self.MP = 0
@@ -110,7 +110,7 @@ class Pokemon():
 
 		# du she
 		if pid == 6:
-			self.attack = 30
+			self.attack = 35
 			self.defence = 12
 			self.HP = 238
 			self.MP = 0
@@ -146,7 +146,7 @@ class Pokemon():
 
 		# pang ding
 		if pid == 9:
-			self.attack = 30
+			self.attack = 35
 			self.defence = 15
 			self.HP = 250
 			self.MP = 0
@@ -164,9 +164,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'fire'
 			self.type2 = 'normal'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '火之牙'
+			self.name2 = '岩浆领域'
+			self.name3 = '地震'
 
 		# hai huang ya
 		if pid == 11:
@@ -176,9 +176,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'water'
 			self.type2 = 'normal'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '热水'
+			self.name2 = '海潮领域'
+			self.name3 = '水之牢笼'
 
 		# tian kong long
 		if pid == 12:
@@ -189,9 +189,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'dragon'
 			self.type2 = 'fly'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '龙之吐息'
+			self.name2 = '帝王之怒'
+			self.name3 = '龙星群'
 
 		# luo qi ya
 		if pid == 13:
@@ -201,46 +201,46 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'water'
 			self.type2 = 'fly'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '水之波动'
+			self.name2 = '自我再生'
+			self.name3 = '飓风'
 
-		# lei jing ling
+		# lei gong
 		if pid == 14:
-			self.attack = 45
-			self.defence = 24
-			self.HP = 340
+			self.attack = 55
+			self.defence = 25
+			self.HP = 420
 			self.MP = 0
 			self.type = 'elec'
 			self.type2 = 'normal'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '雷电锁定'
+			self.name2 = '电网'
+			self.name3 = '雷公神柱'
 
 		# kuai long
 		if pid == 15:
 			self.attack = 52
 			self.dra_att = 52
-			self.defence = 27
-			self.HP = 400
+			self.defence = 30
+			self.HP = 460
 			self.MP = 0
-			self.type = 'elec'
+			self.type = 'fly'
 			self.type2 = 'dragon'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '舍身攻击'
+			self.name2 = '龙焰'
+			self.name3 = '龙之战歌'
 
-		# mei na si
+		# cao ci wei
 		if pid == 16:
 			self.attack = 48
 			self.defence = 22
-			self.HP = 350
+			self.HP = 350  
 			self.MP = 0
-			self.type = 'water'
+			self.type = 'grass'
 			self.type2 = 'fairy'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '芳草气息'
+			self.name2 = '振奋'
+			self.name3 = '花团锦簇'
 
 		# feng huang
 		if pid == 17:
@@ -250,9 +250,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'fire'
 			self.type2 = 'fly'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '焚烧殆尽'
+			self.name2 = '五彩斑斓'
+			self.name3 = '浴血重生'
 
 		# xue la bi
 		if pid == 18:
@@ -262,9 +262,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'grass'
 			self.type2 = 'fairy'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '空间跳跃'
+			self.name2 = '疯狂生长'
+			self.name3 = '时空裂缝'
 
 		# ji la qi
 		if pid == 19:
@@ -274,9 +274,9 @@ class Pokemon():
 			self.MP = 0
 			self.type = 'normal'
 			self.type2 = 'star'
-			self.name1 = '电击'
-			self.name2 = '钢尾'
-			self.name3 = '打雷'
+			self.name1 = '祈愿星'
+			self.name2 = '彗星'
+			self.name3 = '行星咏叹'
 
 		
 

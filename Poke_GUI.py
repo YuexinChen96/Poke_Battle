@@ -399,6 +399,12 @@ class Poke_GUI(QWidget):
 								Spell.id9_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
 
 
+							elif self.target_poke.pid == 18:
+								Spell.id18_spell(self.map, self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+							elif self.target_poke.pid == 19:
+								Spell.id19_spell(self.P1P, self.P2P, self.target_poke, point, type_spell, self.moved)
+
+
 
 							self.spell1, self.spell2, self.ulti = False, False, False
 															
@@ -417,25 +423,37 @@ class Poke_GUI(QWidget):
 				# check all six pokemons finished
 				if len(self.moved) == len(self.P1P) + len(self.P2P):
 					self.moved = []
-					self.turn = self.turn + 1
 					self.water_extra = []
+
+					star_check = False
 					for a in self.P1P:
 						self.endOfRound(a, self.P1P)
 						# check Player 1 stun
 						if a.stun:
 							self.moved.append(a.uid)
 							a.stun = False
+						# star check
+						if a.type == 'star' or a.type2 == 'star':
+							star_check = True
+							star = a
 					for a in self.P2P:
 						self.endOfRound(a, self.P2P)
-				
+						# star check
+						if a.type == 'star' or a.type2 == 'star':
+							star_check = True
+							star = a
+					if star_check and self.turn % 7 == 0:
+						self.star_effect(a.x, a.y)
+
+					self.turn = self.turn + 1
 
 				# check pokemon alive
 				for a in self.P1P:
-					if a.cur_HP == 0:
+					if a.cur_HP <= 0:
 						self.P1P.remove(a)
 						self.p1uid.remove(a.uid)
 				for a in self.P2P:
-					if a.cur_HP == 0:
+					if a.cur_HP <= 0:
 						self.P2P.remove(a)
 
 
@@ -584,7 +602,17 @@ class Poke_GUI(QWidget):
 		elif it.poison_turn == 0:
 			it.poison_mark = 1
 
+	def star_effect(self, x, y):
+		l = Spell.rangeCal(x, y, 2) + [[x, y]]
 
+		for i in l:
+			if Spell.checkSpaceAva(self.map, i[0], i[1], self.P1P, self.P2P):
+				if self.map[i[0]][i[1]] == 'firer':
+					self.map[i[0]][i[1]] = 'water'
+				elif self.map[i[0]][i[1]] == 'water':
+					self.map[i[0]][i[1]] = 'tree'
+				elif self.map[i[0]][i[1]] == 'tree':
+					self.map[i[0]][i[1]] = 'firer'
 	
 
 
