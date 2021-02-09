@@ -68,14 +68,17 @@ def rangeCal(x, y, n):
 # MP HP calculate
 # iod: increase or decrease / 0 for decrease / 1 for increase
 def MHCal(tar, iod, n, full):
-	if iod == 0 and tar > n:
-		return tar - n
-	elif iod == 0 and tar <= n:
-		return 0
-	elif iod == 1 and tar + n > full:
-		return full
-	elif iod == 1 and tar + n < full:
-		return tar + n
+	if iod == 0:
+		if tar >= n:
+			return tar - n
+		else:
+			return 0
+	if iod == 1:
+		if tar + n >= full:
+			return full
+		else:
+			return tar + n
+	return 0
 
 
 
@@ -451,7 +454,7 @@ def id6_spell(P1P, P2P, m_p, tar, t, moved):
 
 	elif t == 2:
 		if tar in rangeCal(m_p.x, m_p.y, 2) and m_p.cur_MP >= MP2 and tar_on:
-			tar_poke.cur_MP = MHCal(m_p.cur_MP, 0, 28, 100)
+			tar_poke.cur_MP = MHCal(tar_poke.cur_MP, 0, 28, 100)
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 
@@ -577,7 +580,7 @@ def id9_spell(P1P, P2P, m_p, tar, t, moved):
 			for i in ours:
 				if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 2):
 					i.cur_MP  = MHCal(i.cur_MP, 1, 12, 100)
-			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2 - 12, 100)
+			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 24, 100)
 			moved.append(m_p.uid)
 	elif t == 3:
 		if m_p.cur_MP >= MP3:
@@ -592,7 +595,7 @@ def id9_spell(P1P, P2P, m_p, tar, t, moved):
 def id10_spell(map, P1P, P2P, m_p, tar, t, moved):
 	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
 	if t == 1:
-		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP > MP1 and tar_on:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP >= MP1 and tar_on:
 			if map[m_p.x][m_p.y] == 'firer':
 				dmg = 100
 			else:
@@ -601,7 +604,7 @@ def id10_spell(map, P1P, P2P, m_p, tar, t, moved):
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
 			moved.append(m_p.uid)
 	elif t == 2:
-		if m_p.cur_MP > MP2:
+		if m_p.cur_MP >= MP2:
 			l = rangeCal(m_p.x, m_p.y, 2) + [[m_p.x, m_p.y]]
 			for i in l:
 				if i[0] >= 0 and i[0] < 20 and i[1] >= 0 and i[1] < 10 and map[i[0]][i[1]] != 'spring' and\
@@ -611,7 +614,7 @@ def id10_spell(map, P1P, P2P, m_p, tar, t, moved):
 			moved.append(m_p.uid)
 	elif t == 3:
 		dmg = 140
-		if m_p.cur_MP > MP3:
+		if m_p.cur_MP >= MP3:
 			l = rangeCal(m_p.x, m_p.y, 2)
 			print(l)
 			for i in enemy:
@@ -627,7 +630,7 @@ def id10_spell(map, P1P, P2P, m_p, tar, t, moved):
 def id11_spell(map, P1P, P2P, m_p, tar, t, moved):
 	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
 	if t == 1:
-		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP > MP1 and tar_on:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP >= MP1 and tar_on:
 			if map[m_p.x][m_p.y] == 'water' or map[m_p.x][m_p.y] == 'ocean':
 				dmg = 100
 			else:
@@ -636,7 +639,7 @@ def id11_spell(map, P1P, P2P, m_p, tar, t, moved):
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
 			moved.append(m_p.uid)
 	elif t == 2:
-		if m_p.cur_MP > MP2:
+		if m_p.cur_MP >= MP2:
 			for a in range(m_p.x - 2,m_p.x + 3):
 				for b in range(m_p.y - 2,m_p.y + 2):
 					if a >= 0 and a < 20 and b >= 0 and b < 10 and map[a][b] != 'srping' and map[a][b] != 'fire' and map[a][b] != 'telepot':
@@ -645,7 +648,7 @@ def id11_spell(map, P1P, P2P, m_p, tar, t, moved):
 			moved.append(m_p.uid)
 	elif t == 3:
 		dmg = 60
-		if m_p.cur_MP > MP3:
+		if m_p.cur_MP >= MP3:
 			l = []
 			for i in rangeCal(m_p.x, m_p.y, 3):
 				if i not in rangeCal(m_p.x, m_p.y, 1):
@@ -666,21 +669,21 @@ def id12_spell(P1P, P2P, m_p, tar, t, moved):
 	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
 	print(m_p.spell_extra)
 	if t == 1:
-		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP > MP1 and tar_on:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP >= MP1 and tar_on:
 			if m_p.spell_extra == 0:
 				tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(70), tar_poke.HP)
 			else:
 				tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(70 + m_p.spell_extra), tar_poke.HP)
-				mp.spell_extra = 0
+				m_p.spell_extra = 0
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
 			moved.append(m_p.uid)
 	elif t == 2:
-		if m_p.cur_MP > MP2:
+		if m_p.cur_MP >= MP2:
 			m_p.spell_extra += 25
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 	elif t == 3:
-		if m_p.cur_MP > MP3:
+		if m_p.cur_MP >= MP3:
 			if m_p.spell_extra == 0:
 				dmg = 140
 			else:
@@ -697,7 +700,7 @@ def id12_spell(P1P, P2P, m_p, tar, t, moved):
 def id13_spell(P1P, P2P, m_p, tar, t, moved):
 	enemy, ours, tar_on, tar_ours, tar_poke = targetSetup(m_p, P1P, P2P, tar)
 	if t == 1:
-		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP > MP1 and tar_on:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP >= MP1 and tar_on:
 			dmg = 80
 			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
 			for i in ours:
@@ -712,7 +715,7 @@ def id13_spell(P1P, P2P, m_p, tar, t, moved):
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 	elif t == 3:
-		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP > MP3 and tar_on:
+		if tar in rangeCal(m_p.x, m_p.y, 3) and  m_p.cur_MP >= MP3 and tar_on:
 			dmg = 130
 			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
 			tar_poke.buff_turn = 2
@@ -864,7 +867,7 @@ def id18_spell(map, P1P, P2P, m_p, tar, t, moved):
 			# check how many trees
 			if len(l) <= 4:
 				for i in l:
-					if checkSpaceAva(map, i[0], i[1], P1P, P2P) and map[i[0]][i[1]] != 'firer':
+					if checkSpaceAva(map, i[0], i[1], P1P, P2P):
 						map[i[0]][i[1]] = 'tree'
 			# more than 4 space
 			else:
@@ -872,7 +875,7 @@ def id18_spell(map, P1P, P2P, m_p, tar, t, moved):
 					r = int(random.random() * len(l))
 					del l[r]
 				for i in l:
-					if checkSpaceAva(map, i[0], i[1], P1P, P2P)  and map[i[0]][i[1]] != 'firer':
+					if checkSpaceAva(map, i[0], i[1], P1P, P2P):
 						map[i[0]][i[1]] = 'tree'
 
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, 12, 100)
@@ -1068,7 +1071,9 @@ def checkSpaceAva(map, x, y, P1P, P2P):
 	for i in P2P:
 		if x == i.x and y == i.y: 
 			return False
-	if map[x][y] == 'fire' or map[x][y] == 'spring' or map[x][y] == 'telepot' or x < 0 or x > 19 or y < 0 or y > 9:
+	if x < 0 or x > 19 or y < 0 or y > 9:
+		return False
+	elif map[x][y] == 'fire' or map[x][y] == 'spring':
 		return False
 	else:
 		return True

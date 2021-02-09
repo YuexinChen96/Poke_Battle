@@ -242,7 +242,6 @@ class Poke_GUI(QWidget):
 			p.setBrush(QColor(255, 0, 0))
 			p.drawRect(1240, 80 + n * i, 200 * pkmn.cur_HP / pkmn.HP, 5)
 			p.setBrush(QColor(0, 0, 255))
-			print(pkmn.pid, pkmn.cur_MP)
 			p.drawRect(1240, 100 + n * i, 200 * pkmn.cur_MP / 100, 5)
 			# draw whether this pokemon has finished its turn
 			if pkmn.uid in self.moved:
@@ -326,8 +325,8 @@ class Poke_GUI(QWidget):
 				self.P1P.append(Pokemon(1, 0, self.Play1_Pokemons[0][1] * 10 + self.Play1_Pokemons[0][0], 1))
 				self.P1P.append(Pokemon(2, 0, self.Play1_Pokemons[1][1] * 10 + self.Play1_Pokemons[1][0], 2))
 				self.P1P.append(Pokemon(0, 0, self.Play1_Pokemons[2][1] * 10 + self.Play1_Pokemons[2][0], 3))
-				self.P2P.append(Pokemon(4, 1, self.Play2_Pokemons[0][1] * 10 + self.Play2_Pokemons[0][0], 4)) # 18, 9
-				self.P2P.append(Pokemon(3, 1, self.Play2_Pokemons[1][1] * 10 + self.Play2_Pokemons[1][0], 5)) # 17, 9
+				self.P2P.append(Pokemon(3, 0, self.Play2_Pokemons[0][1] * 10 + self.Play2_Pokemons[0][0], 4)) # 18, 9
+				self.P2P.append(Pokemon(4, 0, self.Play2_Pokemons[1][1] * 10 + self.Play2_Pokemons[1][0], 5)) # 17, 9
 				self.P2P.append(Pokemon(2, 1, self.Play2_Pokemons[2][1] * 10 + self.Play2_Pokemons[2][0], 6)) # 19, 9
 				for i in self.P1P:
 					self.p1uid.append(i.uid) # Player 1 Pokemon list - used for later
@@ -490,7 +489,6 @@ class Poke_GUI(QWidget):
 							self.P2P.remove(a)
 
 
-
 			# reload page
 			self.update()
 
@@ -511,7 +509,7 @@ class Poke_GUI(QWidget):
 	def checkMovement(self, x, y):
 		if self.checkAdjacent(x, y, self.target_poke.x, self.target_poke.y):
 			
-			if self.map[x][y] != 'spring' and self.map[x][y] != 'telepot' and self.map[x][y] != 'fire':
+			if self.map[x][y] != 'spring' and self.map[x][y] != 'fire':
 				if self.target_poke.type != 'fly' and self.target_poke.type2 != 'fly' and self.map[x][y] == 'tree':
 					return False
 				else:
@@ -536,27 +534,23 @@ class Poke_GUI(QWidget):
 			elec_list = []
 			for a in range(2):
 				for b in tar:
-					if b.uid not in elec_list:
-						if self.dmgCal(my, b) != 100:
-							elec_list.append(b.uid)
-							break
+					if b.uid not in elec_list and self.checkAdjacent(b.x, b.y, my.x, my.y):
+						# attack
+						b.cur_HP = Spell.MHCal(b.cur_HP, 0, Spell.belowZero(my.cur_att - b.cur_def), b.HP)
+						# damaged recover mana
+						b.cur_MP = Spell.MHCal(b.cur_MP, 1, 4, 100)
+						my.cur_MP = Spell.MHCal(my.cur_MP, 1, 4, 100)
+						elec_list.append(b.uid)
+						break
 		else:
 			for b in tar:
-				if self.dmgCal(my, b) != 100:
+				if self.checkAdjacent(b.x, b.y, my.x, my.y):
+					b.cur_HP = Spell.MHCal(b.cur_HP, 0, Spell.belowZero(my.cur_att - b.cur_def), b.HP)
+					b.cur_MP = Spell.MHCal(b.cur_MP, 1, 4, 100)
+					my.cur_MP = Spell.MHCal(my.cur_MP, 1, 4, 100)
 					break
 
 
-	# Damage calculate - over health
-	def dmgCal(self, my, tar):
-		if self.checkAdjacent(tar.x, tar.y, my.x, my.y):
-			tar.cur_HP = tar.cur_HP - (my.cur_att - tar.cur_def)
-			if my.cur_MP + 4 > 100:
-				my.cur_MP = 100
-			else:
-				my.cur_MP = my.cur_MP + 4
-			return tar.uid
-		else:
-			return 100
 
 	def useSpell1(self, x, y):
 		print("Using Spell_1")
@@ -590,7 +584,7 @@ class Poke_GUI(QWidget):
 		if i.type == 'dragon' or i.type2 == 'dragon':
 			dra_flag = False
 			for a in dra:
-				if self.checkAdjacent(a.x, a.y, i.x, i.y):
+				if self.checkAdjacent(a.x, a.y, i.x, i.y) and (a.type == 'dragon' or a.type2 == 'dragon'):
 					dra_flag = True
 					# dmg buff
 					i.dra_att = i.attack + 15
@@ -659,16 +653,22 @@ class Poke_GUI(QWidget):
 			it.poison_mark = 1
 
 	def star_effect(self, x, y):
-		l = Spell.rangeCal(x, y, 2) + [[x, y]]
+		l = []
+		for i in Spell.rangeCal(x, y, 3):
+			if i not in Spell.rangeCal(x, y, 1):
+				l.append(i)
 
 		for i in l:
 			if Spell.checkSpaceAva(self.map, i[0], i[1], self.P1P, self.P2P):
-				if self.map[i[0]][i[1]] == 'firer':
-					self.map[i[0]][i[1]] = 'water'
-				elif self.map[i[0]][i[1]] == 'water' or self.map[i[0]][i[1]] == 'ocean':
-					self.map[i[0]][i[1]] = 'tree'
-				elif self.map[i[0]][i[1]] == 'tree':
-					self.map[i[0]][i[1]] = 'firer'
+				if self.map[i[0]][i[1]] == 'firer' or self.map[i[0]][i[1]] == 'water' or self.map[i[0]][i[1]] == 'ocean'\
+				or self.map[i[0]][i[1]] == 'tree' and Spell.checkSpaceAva(self.map, i[0], i[1], self.P1P, self.P2P):
+					d = int(random.random() * 3)
+					if d == 0:
+						self.map[i[0]][i[1]] = 'water'
+					elif d == 1:
+						self.map[i[0]][i[1]] = 'tree'
+					elif d == 2:
+						self.map[i[0]][i[1]] = 'firer'
 	
 
 

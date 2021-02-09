@@ -8,7 +8,7 @@ class Pokemon():
 		self.x = x
 		self.y = y
 		self.pid = pid
-		self.cur_MP = 100
+		self.cur_MP = 0
 		self.uid = uid
 		self.fire_mark = False
 		self.poison_mark = 1
