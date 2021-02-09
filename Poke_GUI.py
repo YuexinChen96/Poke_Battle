@@ -106,7 +106,7 @@ class Poke_GUI(QWidget):
 
 		# draw Polygon and Pokemons
 		for a in range(10):
-			for b in range(2):
+			for b in range(3):
 				n = 10 * b + a
 				self.drawPokemon(40 + a * 120, 200 + b * 100, 50, p, 'Pics/pic' + str(n) + '.jpg')
 				self.drawPolygonByPos(40 + a * 120, 200 + b * 100, 50, p)
@@ -281,6 +281,7 @@ class Poke_GUI(QWidget):
 			x = e.x()
 			y = e.y()
 
+
 			# Page 1: start button
 			if self.page == 0 and x > 300 and x < 500 and y > 500 and y < 600:
 				self.page = 1
@@ -290,7 +291,7 @@ class Poke_GUI(QWidget):
 
 			# Page 2: select Pokemons
 			# boardary 40, 1120 + 50, 200, ----------------------------------------------need change if more pokemons
-			if self.page == 1 and x > 40 and x < 1170 and y > 200 and y < 300 + 50 * root3:
+			if self.page == 1 and x > 40 and x < 1170 and y > 200 and y < 400 + 50 * root3: # change 400 to 500: add one more row
 				i_x, i_y = int((x - 40) / 120), int((y - 200) / 100)
 				# Ultimate Mode
 				if self.Ultimate:
@@ -325,9 +326,9 @@ class Poke_GUI(QWidget):
 				self.P1P.append(Pokemon(1, 0, self.Play1_Pokemons[0][1] * 10 + self.Play1_Pokemons[0][0], 1))
 				self.P1P.append(Pokemon(2, 0, self.Play1_Pokemons[1][1] * 10 + self.Play1_Pokemons[1][0], 2))
 				self.P1P.append(Pokemon(0, 0, self.Play1_Pokemons[2][1] * 10 + self.Play1_Pokemons[2][0], 3))
-				self.P2P.append(Pokemon(3, 0, self.Play2_Pokemons[0][1] * 10 + self.Play2_Pokemons[0][0], 4)) # 18, 9
-				self.P2P.append(Pokemon(4, 0, self.Play2_Pokemons[1][1] * 10 + self.Play2_Pokemons[1][0], 5)) # 17, 9
-				self.P2P.append(Pokemon(2, 1, self.Play2_Pokemons[2][1] * 10 + self.Play2_Pokemons[2][0], 6)) # 19, 9
+				self.P2P.append(Pokemon(18, 9, self.Play2_Pokemons[0][1] * 10 + self.Play2_Pokemons[0][0], 4)) # 18, 9
+				self.P2P.append(Pokemon(17, 9, self.Play2_Pokemons[1][1] * 10 + self.Play2_Pokemons[1][0], 5)) # 17, 9
+				self.P2P.append(Pokemon(19, 9, self.Play2_Pokemons[2][1] * 10 + self.Play2_Pokemons[2][0], 6)) # 19, 9
 				for i in self.P1P:
 					self.p1uid.append(i.uid) # Player 1 Pokemon list - used for later
 
