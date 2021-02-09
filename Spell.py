@@ -383,8 +383,7 @@ def id4_spell(P1P, P2P, m_p, tar, t, moved, turn):
 	elif t == 3:
 		if m_p.cur_MP >= MP3:
 			m_p.cur_HP = m_p.HP
-			m_p.cur_turn = turn
-			m_p.ult = True
+			m_p.stun = 1
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
 
@@ -586,7 +585,7 @@ def id9_spell(P1P, P2P, m_p, tar, t, moved):
 		if m_p.cur_MP >= MP3:
 			for i in enemy:
 				if [i.x, i.y] in rangeCal(m_p.x, m_p.y, 3):
-					i.stun = True
+					i.stun = 1
 					print("Sleep!")
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP3, 100)
 			moved.append(m_p.uid)
@@ -730,7 +729,7 @@ def id14_spell(map, P1P, P2P, m_p, tar, t, moved, thunder):
 		if tar in rangeCal(m_p.x, m_p.y, 3) and m_p.cur_MP >= MP1 and tar_on:
 			dmg = 65
 			tar_poke.cur_HP = MHCal(tar_poke.cur_HP, 0, belowZero(dmg - tar_poke.cur_def), tar_poke.HP)
-			tar_poke.stun = True
+			tar_poke.stun = 1
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP1, 100)
 			moved.append(m_p.uid)
 	elif t == 2:
@@ -738,7 +737,7 @@ def id14_spell(map, P1P, P2P, m_p, tar, t, moved, thunder):
 			l = rangeCal(tar[0], tar[1], 1) + [[tar[0], tar[1]]]
 			for i in enemy:
 				if [i.x, i.y] in l:
-					i.stun = True
+					i.stun = 1
 			m_p.cur_MP = MHCal(m_p.cur_MP, 0, MP2, 100)
 			moved.append(m_p.uid)
 	elif t == 3:

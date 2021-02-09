@@ -326,9 +326,9 @@ class Poke_GUI(QWidget):
 				self.P1P.append(Pokemon(1, 0, self.Play1_Pokemons[0][1] * 10 + self.Play1_Pokemons[0][0], 1))
 				self.P1P.append(Pokemon(2, 0, self.Play1_Pokemons[1][1] * 10 + self.Play1_Pokemons[1][0], 2))
 				self.P1P.append(Pokemon(0, 0, self.Play1_Pokemons[2][1] * 10 + self.Play1_Pokemons[2][0], 3))
-				self.P2P.append(Pokemon(18, 9, self.Play2_Pokemons[0][1] * 10 + self.Play2_Pokemons[0][0], 4)) # 18, 9
-				self.P2P.append(Pokemon(17, 9, self.Play2_Pokemons[1][1] * 10 + self.Play2_Pokemons[1][0], 5)) # 17, 9
-				self.P2P.append(Pokemon(19, 9, self.Play2_Pokemons[2][1] * 10 + self.Play2_Pokemons[2][0], 6)) # 19, 9
+				self.P2P.append(Pokemon(2, 1, self.Play2_Pokemons[0][1] * 10 + self.Play2_Pokemons[0][0], 4)) # 18, 9
+				self.P2P.append(Pokemon(3, 1, self.Play2_Pokemons[1][1] * 10 + self.Play2_Pokemons[1][0], 5)) # 17, 9
+				self.P2P.append(Pokemon(4, 1, self.Play2_Pokemons[2][1] * 10 + self.Play2_Pokemons[2][0], 6)) # 19, 9
 				for i in self.P1P:
 					self.p1uid.append(i.uid) # Player 1 Pokemon list - used for later
 
@@ -351,7 +351,7 @@ class Poke_GUI(QWidget):
 				# selected poke flag == true then ...
 				else:
 					# already select one pokemon
-					self.stunAndUltCheck()
+
 
 					# check whether switch to another pokemon / require no buttons pushed
 					another_flag = False
@@ -448,10 +448,8 @@ class Poke_GUI(QWidget):
 					star_check = False
 					for a in self.P1P:
 						self.endOfRound(a, self.P1P)
-						# check Player 1 stun
-						if a.stun:
-							self.moved.append(a.uid)
-							a.stun = False
+
+
 						# star check
 						if a.type == 'star' or a.type2 == 'star':
 							star_check = True
@@ -472,8 +470,9 @@ class Poke_GUI(QWidget):
 
 					self.turn = self.turn + 1
 
-				# check pokemon alive
+				# check pokemon alive and stun
 				for a in self.P1P:
+					# check alive
 					if a.cur_HP <= 0:
 						if a.pid == 17 and a.ult and a.once:
 							a.cur_HP = a.HP
@@ -481,7 +480,16 @@ class Poke_GUI(QWidget):
 						else:
 							self.P1P.remove(a)
 							self.p1uid.remove(a.uid)
+					# special ult check
+					self.specialUltCheck(a, self.moved, True)
+
+					# check stun
+					if a.stun != 0 and a.uid not in self.moved:
+						self.moved.append(a.uid)
+						a.stun -= 1		
+
 				for a in self.P2P:
+					#check alive
 					if a.cur_HP <= 0:
 						if a.pid == 17 and a.ult and a.once:
 							a.cur_HP = a.HP
@@ -489,9 +497,29 @@ class Poke_GUI(QWidget):
 						else:
 							self.P2P.remove(a)
 
+					# special ult check
+					self.specialUltCheck(a, self.moved, True)
+
+					# check stun
+					if len(self.moved) >= 3 and a.stun != 0 and a.uid not in self.moved:
+						self.moved.append(a.uid)
+						a.stun -= 1
+
 
 			# reload page
 			self.update()
+
+	def specialUltCheck(self, a, moved, fir):
+		# Player 1
+		if fir and a.pid == 3 and a.ult and a.uid not in moved:
+			Spell.id3_ult(self.P1P, self.P2P, a, self.moved)
+			if a.stun == 1:
+				a.stun = 0
+		if not fir and a.pid == 3 and len(moved) >= 3 and a.ult and a.uid not in moved:
+			Spell.id3_ult(self.P1P, self.P2P, a, self.moved)
+			if a.stun == 1:
+				a.stun = 0
+
 
 
 	# execute the movement
@@ -551,10 +579,6 @@ class Poke_GUI(QWidget):
 					my.cur_MP = Spell.MHCal(my.cur_MP, 1, 4, 100)
 					break
 
-
-
-	def useSpell1(self, x, y):
-		print("Using Spell_1")
 
 
 	# End of round calculate
@@ -732,25 +756,6 @@ class Poke_GUI(QWidget):
 		area = QRect(x - (root6 - 2) / 4 * l, y + y_off * l, l * root6 / 2, l * root6 / 2)
 		p.drawPixmap(area, pimg)
 
-
-
-	def stunAndUltCheck(self):			
-		for i in self.P1P:
-			# miao wa zhong zi lock spell
-			if i.pid == 3 and i.ult and self.turn == i.cur_turn + 1:
-				Spell.id3_ult(self.P1P, self.P2P, i, self.moved)
-			elif i.pid == 4 and i.ult and self.turn == i.cur_turn + 1:
-				self.moved.append(i.uid)
-				i.ult = False
-		for i in self.P2P:
-			if i.pid == 3 and len(self.moved) >= len(self.P1P) and i.ult and self.turn == i.cur_turn + 1:
-				Spell.id3_ult(self.P1P, self.P2P, i, self.moved)
-			elif i.pid == 4 and len(self.moved) >= len(self.P1P) and i.ult and self.turn == i.cur_turn + 1:
-				self.moved.append(i.uid)
-				i.ult = False
-			elif i.stun and len(self.moved) >= len(self.P1P):
-				self.moved.append(i.uid)
-				i.stun = False
 
 	def playerPokeColor(self, p, x, y, P1i, P2i):
 		thunder_ = []

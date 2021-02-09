@@ -8,7 +8,7 @@ class Pokemon():
 		self.x = x
 		self.y = y
 		self.pid = pid
-		self.cur_MP = 0
+		self.cur_MP = 100
 		self.uid = uid
 		self.fire_mark = False
 		self.poison_mark = 1
@@ -19,7 +19,7 @@ class Pokemon():
 		self.buff_turn = 0
 		self.buff_att = 0
 		self.buff_def = 0
-		self.stun = False
+		self.stun = 0
 
 		self.setupPokemon(pid)
 		self.cur_HP = self.HP
@@ -77,7 +77,6 @@ class Pokemon():
 			self.name3 = '阳光烈焰'
 
 			self.ult = False
-			self.cur_turn = 0
 
 		# ka bi shou
 		if pid == 4:
@@ -91,8 +90,6 @@ class Pokemon():
 			self.name2 = '强化'
 			self.name3 = '睡觉'
 
-			self.ult = False
-			self.cur_turn = 0
 
 		# tu tou long
 		if pid == 5:
